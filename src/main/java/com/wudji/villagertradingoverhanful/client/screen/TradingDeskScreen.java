@@ -3,6 +3,7 @@ package com.wudji.villagertradingoverhanful.client.screen;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import com.wudji.villagertradingoverhanful.client.mixin.SlotPositionAccessor;
 import com.wudji.villagertradingoverhanful.client.preferences.TradingDeskPreferences;
@@ -25,6 +26,7 @@ import net.minecraft.world.inventory.MerchantMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.trading.MerchantOffer;
+import org.jspecify.annotations.NonNull;
 
 public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     private static final int LIST_WIDTH = 176;
@@ -112,7 +114,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+    protected void renderLabels(@NonNull GuiGraphics graphics, int mouseX, int mouseY) {
         Component merchantTitle = getMerchantTitle();
         int experienceFill = getExperienceFill();
         if (experienceFill < 0) {
@@ -131,7 +133,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     }
 
     @Override
-    public void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+    public void renderContents(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         super.renderContents(graphics, mouseX, mouseY, delta);
         int listX = getListX();
         int listTop = topPos + HEADER_HEIGHT;
@@ -148,6 +150,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         if (queuedTrades > 0) {
             graphics.drawString(font, Component.translatable("screen.villagertradingoverhanful.queue", queuedTrades), leftPos + 8, topPos + 84, 0xFFFFD47A, false);
         }
+        renderTooltip(graphics, mouseX, mouseY);
     }
 
     @Override
@@ -197,7 +200,9 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
             }
         }
         if (pendingDestinationSlot >= 0) {
-            minecraft.gameMode.handleInventoryMouseClick(menu.containerId, pendingDestinationSlot, 0, ClickType.PICKUP, minecraft.player);
+            if (minecraft.gameMode != null) {
+                minecraft.gameMode.handleInventoryMouseClick(menu.containerId, pendingDestinationSlot, 0, ClickType.PICKUP, minecraft.player);
+            }
             pendingDestinationSlot = -1;
             queuedTrades--;
             return;
@@ -219,7 +224,9 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
             queuedTrades = 0;
             return;
         }
-        minecraft.gameMode.handleInventoryMouseClick(menu.containerId, 2, 0, ClickType.PICKUP, minecraft.player);
+        if (minecraft.gameMode != null) {
+            minecraft.gameMode.handleInventoryMouseClick(menu.containerId, 2, 0, ClickType.PICKUP, minecraft.player);
+        }
     }
 
     private void renderOfferRow(GuiGraphics graphics, int offerIndex, int x, int y, int mouseX, int mouseY) {
@@ -289,7 +296,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         menu.setSelectionHint(offerIndex);
         menu.tryMoveItems(offerIndex);
         menu.slotsChanged(menu.slots.get(0).container);
-        minecraft.getConnection().send(new ServerboundSelectTradePacket(offerIndex));
+        Objects.requireNonNull(minecraft.getConnection()).send(new ServerboundSelectTradePacket(offerIndex));
     }
 
     private void refreshOffers() {
