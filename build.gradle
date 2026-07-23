@@ -29,17 +29,12 @@ repositories {
     }
 }
 
-// cloth config api
-dependencies {
-    implementation "maven.modrinth:9s6osm5g:xuX40TN5" // v26.1.154+fabric
-}
-
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
+    modImplementation "maven.modrinth:9s6osm5g:xuX40TN5" // Fabric 1.21.11
 }
 
 processResources {
