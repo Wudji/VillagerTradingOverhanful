@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "villagertradingoverhanful",
+  "version": "${version}",
+  "name": "villagertradingoverhanful",
+  "description": "A client-side trading desk for villager offers.",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/villagertradingoverhanful/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.wudji.villagertradingoverhanful.client.VillagertradingoverhanfulClient"
+    ]
+  },
+  "mixins": [
+    "villagertradingoverhanful.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}",
+    "cloth-config": "*"
+  }
+}
