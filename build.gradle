@@ -7,7 +7,10 @@ version = project.mod_version
 group = project.maven_group
 
 base {
-    archivesName = project.archives_base_name
+    archivesName = "${project.archives_base_name}-v${project.mod_version}-fabric-mc${project.minecraft_version}"
+    tasks.withType(AbstractArchiveTask).configureEach {
+        archiveVersion = ""
+    }
 }
 
 
@@ -28,7 +31,7 @@ repositories {
 
 // cloth config api
 dependencies {
-    implementation "maven.modrinth:9s6osm5g:Nv3xnWXd"
+    implementation "maven.modrinth:9s6osm5g:GFM8zh9J" // v26.1.154+fabric
 }
 
 dependencies {
