@@ -44,6 +44,8 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     private static final int EXPERIENCE_BAR_WIDTH = 28;
     private static final int EXPERIENCE_BAR_HEIGHT = 5;
     private static final Identifier EXPERIENCE_BAR_CURRENT_SPRITE = Identifier.withDefaultNamespace("container/villager/experience_bar_current");
+    private static final Identifier TRADE_ARROW_SPRITE = Identifier.withDefaultNamespace("container/villager/trade_arrow");
+    private static final Identifier TRADE_ARROW_OUT_OF_STOCK_SPRITE = Identifier.withDefaultNamespace("container/villager/trade_arrow_out_of_stock");
 
     private final List<Integer> visibleOffers = new ArrayList<>();
     private OfferFilter filter = OfferFilter.ALL;
@@ -102,6 +104,15 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         graphics.fill(leftPos, topPos, leftPos + 176, topPos + RIGHT_PANEL_HEIGHT, PANEL_COLOR);
         graphics.outline(leftPos, topPos, 176, RIGHT_PANEL_HEIGHT, PANEL_BORDER_COLOR);
         graphics.fill(leftPos + 6, topPos + 32, leftPos + 170, topPos + 63, SLOT_COLOR);
+        if (selectedOffer >= 0 && selectedOffer < menu.getOffers().size()) {
+            MerchantOffer offer = menu.getOffers().get(selectedOffer);
+            Identifier arrowSprite = offer.isOutOfStock() ? TRADE_ARROW_OUT_OF_STOCK_SPRITE : TRADE_ARROW_SPRITE;
+            Slot secondInputSlot = menu.slots.get(1);
+            Slot resultSlot = menu.slots.get(2);
+            int arrowX = leftPos + (secondInputSlot.x + 16 + resultSlot.x - 10) / 2;
+            int arrowY = topPos + secondInputSlot.y + 3;
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, arrowSprite, arrowX, arrowY, 10, 9);
+        }
 
         for (Slot slot : menu.slots) {
             int slotX = leftPos + slot.x - 1;
