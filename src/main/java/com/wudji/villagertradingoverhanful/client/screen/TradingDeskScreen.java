@@ -220,7 +220,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
 
         MerchantOffer offer = menu.getOffers().get(selectedOffer);
         ItemStack result = menu.slots.get(2).getItem();
-        if (offer.isOutOfStock() || result.isEmpty()) {
+        if (offer.isOutOfStock() || result.isEmpty() || !ItemStack.isSameItemSameComponents(result, offer.getResult()) || result.getCount() != offer.getResult().getCount()) {
             queuedTrades = 0;
             return;
         }
@@ -290,9 +290,10 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         if (selectedOffer < 0 || selectedOffer >= menu.getOffers().size()) {
             return;
         }
+        MerchantOffer offer = menu.getOffers().get(selectedOffer);
         selectOffer(selectedOffer);
         pendingDestinationSlot = -1;
-        queuedTrades = Math.min(requestedTrades, menu.getOffers().get(selectedOffer).getMaxUses() - menu.getOffers().get(selectedOffer).getUses());
+        queuedTrades = Math.min(requestedTrades, Math.min(offer.getMaxUses() - offer.getUses(), getAffordableTradeCount(offer)));
     }
 
     private void selectOffer(int offerIndex) {
@@ -390,10 +391,26 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         return countAvailable(offer.getCostA()) >= offer.getCostA().getCount() && (offer.getCostB().isEmpty() || countAvailable(offer.getCostB()) >= offer.getCostB().getCount());
     }
 
+    private int getAffordableTradeCount(MerchantOffer offer) {
+        ItemStack costA = offer.getCostA();
+        ItemStack costB = offer.getCostB();
+        int available = countAvailable(costA);
+        if (costB.isEmpty()) {
+            return available / costA.getCount();
+        }
+        if (ItemStack.isSameItemSameComponents(costA, costB)) {
+            return available / (costA.getCount() + costB.getCount());
+        }
+        return Math.min(available / costA.getCount(), countAvailable(costB) / costB.getCount());
+    }
+
     private int countAvailable(ItemStack wanted) {
         int count = 0;
-        for (Slot slot : menu.slots) {
-            ItemStack stack = slot.getItem();
+        for (int slotIndex = 0; slotIndex < menu.slots.size(); slotIndex++) {
+            if (slotIndex == 2) {
+                continue;
+            }
+            ItemStack stack = menu.slots.get(slotIndex).getItem();
             if (ItemStack.isSameItemSameComponents(stack, wanted)) {
                 count += stack.getCount();
             }
