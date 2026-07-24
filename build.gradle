@@ -34,7 +34,7 @@ dependencies {
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    modImplementation "maven.modrinth:9s6osm5g:HpMb5wGb" // Fabric 1.21.1
+    modImplementation "maven.modrinth:9s6osm5g:2xQdCMyG" // Cloth Config API Fabric 1.20.1
 }
 
 processResources {

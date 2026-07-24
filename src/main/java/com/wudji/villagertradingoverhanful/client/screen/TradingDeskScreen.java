@@ -43,9 +43,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     private static final int MUTED_COLOR = 0xFF555555;
     private static final int EXPERIENCE_BAR_WIDTH = 28;
     private static final int EXPERIENCE_BAR_HEIGHT = 5;
-    private static final ResourceLocation EXPERIENCE_BAR_CURRENT_SPRITE = ResourceLocation.withDefaultNamespace("container/villager/experience_bar_current");
-    private static final ResourceLocation TRADE_ARROW_SPRITE = ResourceLocation.withDefaultNamespace("container/villager/trade_arrow");
-    private static final ResourceLocation TRADE_ARROW_OUT_OF_STOCK_SPRITE = ResourceLocation.withDefaultNamespace("container/villager/trade_arrow_out_of_stock");
+    private static final ResourceLocation VILLAGER_TEXTURE = new ResourceLocation("textures/gui/container/villager2.png");
 
     private final List<Integer> visibleOffers = new ArrayList<>();
     private OfferFilter filter = OfferFilter.ALL;
@@ -106,11 +104,10 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         graphics.fill(leftPos + 6, topPos + 32, leftPos + 170, topPos + 63, SLOT_COLOR);
         if (selectedOffer >= 0 && selectedOffer < menu.getOffers().size()) {
             MerchantOffer offer = menu.getOffers().get(selectedOffer);
-            ResourceLocation tradeArrow = offer.isOutOfStock() ? TRADE_ARROW_OUT_OF_STOCK_SPRITE : TRADE_ARROW_SPRITE;
             Slot secondInputSlot = menu.slots.get(1);
             Slot resultSlot = menu.slots.get(2);
             int arrowX = leftPos + (secondInputSlot.x + 16 + resultSlot.x - 10) / 2;
-            graphics.blitSprite(tradeArrow, arrowX, topPos + secondInputSlot.y + 3, 10, 9);
+            graphics.blit(VILLAGER_TEXTURE, arrowX, topPos + secondInputSlot.y + 3, 0, offer.isOutOfStock() ? 25 : 15, 171, 10, 9, 512, 256);
         }
 
         for (Slot slot : menu.slots) {
@@ -133,7 +130,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
             graphics.drawString(font, visibleTitle, 8, 7, 0xFFFFFFFF, true);
             graphics.fill(experienceX, 10, experienceX + EXPERIENCE_BAR_WIDTH, 10 + EXPERIENCE_BAR_HEIGHT, 0xFF000000);
             if (experienceFill > 0) {
-                graphics.blitSprite(EXPERIENCE_BAR_CURRENT_SPRITE, 102, 5, 0, 0, experienceX, 10, experienceFill, EXPERIENCE_BAR_HEIGHT);
+                graphics.blit(VILLAGER_TEXTURE, experienceX, 10, 0, 186, 191, experienceFill, EXPERIENCE_BAR_HEIGHT, 512, 256);
             }
         }
         graphics.drawString(font, Component.translatable("screen.villagertradingoverhanful.offer_inputs"), 8, 20, MUTED_COLOR, false);
@@ -181,13 +178,13 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
         if (mouseX >= getListX() && mouseX < getListX() + getListWidth() && mouseY >= topPos && mouseY < topPos + getListHeight()) {
             int maximumScroll = Math.max(0, visibleOffers.size() - getMaxRows());
-            scrollRow = Math.max(0, Math.min(maximumScroll, scrollRow - (int) Math.signum(verticalAmount)));
+            scrollRow = Math.max(0, Math.min(maximumScroll, scrollRow - (int) Math.signum(amount)));
             return true;
         }
-        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+        return super.mouseScrolled(mouseX, mouseY, amount);
     }
 
     @Override
@@ -220,7 +217,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
 
         MerchantOffer offer = menu.getOffers().get(selectedOffer);
         ItemStack result = menu.slots.get(2).getItem();
-        if (offer.isOutOfStock() || result.isEmpty() || !ItemStack.isSameItemSameComponents(result, offer.getResult()) || result.getCount() != offer.getResult().getCount()) {
+        if (offer.isOutOfStock() || result.isEmpty() || !ItemStack.isSameItemSameTags(result, offer.getResult()) || result.getCount() != offer.getResult().getCount()) {
             queuedTrades = 0;
             return;
         }
@@ -342,7 +339,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         for (int slotIndex = 3; slotIndex < menu.slots.size(); slotIndex++) {
             Slot slot = menu.slots.get(slotIndex);
             ItemStack stack = slot.getItem();
-            if (ItemStack.isSameItemSameComponents(stack, result) && stack.getCount() + result.getCount() <= slot.getMaxStackSize(result)) {
+            if (ItemStack.isSameItemSameTags(stack, result) && stack.getCount() + result.getCount() <= slot.getMaxStackSize(result)) {
                 return slotIndex;
             }
         }
@@ -400,7 +397,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         if (costB.isEmpty()) {
             return available / costA.getCount();
         }
-        if (ItemStack.isSameItemSameComponents(costA, costB)) {
+        if (ItemStack.isSameItemSameTags(costA, costB)) {
             return available / (costA.getCount() + costB.getCount());
         }
         return Math.min(available / costA.getCount(), countAvailable(costB) / costB.getCount());
@@ -413,7 +410,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
                 continue;
             }
             ItemStack stack = menu.slots.get(slotIndex).getItem();
-            if (ItemStack.isSameItemSameComponents(stack, wanted)) {
+            if (ItemStack.isSameItemSameTags(stack, wanted)) {
                 count += stack.getCount();
             }
         }
