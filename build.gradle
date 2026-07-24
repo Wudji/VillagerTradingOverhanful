@@ -7,7 +7,10 @@ version = project.mod_version
 group = project.maven_group
 
 base {
-    archivesName = project.archives_base_name
+    archivesName = "${project.archives_base_name}-v${project.mod_version}-fabric-mc${project.minecraft_version}"
+    tasks.withType(AbstractArchiveTask).configureEach {
+        archiveVersion = ""
+    }
 }
 
 
