@@ -199,7 +199,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
             knownOfferCount = menu.getOffers().size();
             refreshOffers();
             if (!visibleOffers.isEmpty()) {
-                selectOffer(visibleOffers.getFirst());
+                selectOffer(visibleOffers.get(0));
             }
         }
         if (pendingDestinationSlot >= 0) {
