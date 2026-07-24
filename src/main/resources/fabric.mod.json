@@ -4,8 +4,13 @@
   "version": "${version}",
   "name": "villagertradingoverhanful",
   "description": "A client-side trading desk for villager offers.",
-  "authors": [],
-  "contact": {},
+  "authors": [
+    "Wudji"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/project/villager-trading-overhaul/",
+    "sources": "https://github.com/Wudji/VillagerTradingOverhanful"
+  },
   "license": "MIT",
   "icon": "assets/villagertradingoverhanful/icon.png",
   "environment": "client",
@@ -18,9 +23,9 @@
     "villagertradingoverhanful.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=${loader_version}",
+    "fabricloader": "*",
     "fabric-api": "*",
-    "minecraft": "${minecraft_version}",
+    "minecraft": "*",
     "cloth-config": "*"
   }
 }
