@@ -110,7 +110,7 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 
 dependencies {
-    implementation "maven.modrinth:9s6osm5g:zErG1kOw"// cloth config api 26.2.155+neoforge
+    implementation "maven.modrinth:9s6osm5g:TimoYzse"// cloth config api 26.1.154+neoforge
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
