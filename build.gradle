@@ -29,13 +29,13 @@ base {
 }
 
 base {
-    archivesName = "${project.mod_id}-v${project.mod_version}-neoforge-mc${project.minecraft_regular_version}"
+    archivesName = "${project.mod_id}-v${project.mod_version}-neoforge-mc${project.minecraft_version}"
     tasks.withType(AbstractArchiveTask).configureEach {
         archiveVersion = ""
     }
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 neoForge {
     // Specify the version of NeoForge to use.
@@ -110,7 +110,7 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 
 dependencies {
-    implementation "maven.modrinth:9s6osm5g:TimoYzse"// cloth config api 26.1.154+neoforge
+    implementation "maven.modrinth:9s6osm5g:Wsus0EWg"// cloth config api 26.1.154+neoforge
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
