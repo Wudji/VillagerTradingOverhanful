@@ -1,4 +1,4 @@
-package com.wudji.villagertradingoverhanful.client.mixin;
+package com.wudji.villagertradingoverhanful.mixin;
 
 import net.minecraft.world.inventory.Slot;
 

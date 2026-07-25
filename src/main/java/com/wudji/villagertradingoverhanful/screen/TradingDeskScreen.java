@@ -1,30 +1,30 @@
-package com.wudji.villagertradingoverhanful.client.screen;
+package com.wudji.villagertradingoverhanful.screen;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
-import com.wudji.villagertradingoverhanful.client.mixin.SlotPositionAccessor;
-import com.wudji.villagertradingoverhanful.client.preferences.TradingDeskPreferences;
+import com.wudji.villagertradingoverhanful.mixin.SlotPositionAccessor;
+import com.wudji.villagertradingoverhanful.preferences.TradingDeskPreferences;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundSelectTradePacket;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.npc.villager.VillagerData;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.MerchantMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.trading.MerchantOffer;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     private static final int LIST_WIDTH = 176;

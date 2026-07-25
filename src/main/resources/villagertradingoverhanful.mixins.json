@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.wudji.villagertradingoverhanful.client.mixin",
+  "package": "com.wudji.villagertradingoverhanful.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
   ],

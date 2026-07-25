@@ -1,4 +1,6 @@
-package com.wudji.villagertradingoverhanful.client.preferences;
+package com.wudji.villagertradingoverhanful.preferences;
+
+import net.neoforged.fml.loading.FMLPaths;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,10 +11,9 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import net.fabricmc.loader.api.FabricLoader;
-
 public final class TradingDeskPreferences {
-    private static final Path FILE = FabricLoader.getInstance().getConfigDir().resolve("villager-trading-desk.properties");
+
+    private static final Path FILE = FMLPaths.CONFIGDIR.get().resolve("villager-trading-desk.properties");
     private static final Set<String> FAVORITES = new HashSet<>();
     private static int batchLimit = 32;
     private static boolean hideUnavailable = false;
