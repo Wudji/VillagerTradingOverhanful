@@ -69,7 +69,7 @@ neoForge {
         }
 
         data {
-            clientData()
+            data()
 
             // example of overriding the workingDirectory set in configureEach above, uncomment if you want to use it
             // gameDirectory = project.file('run-data')
@@ -110,7 +110,7 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 
 dependencies {
-    implementation "maven.modrinth:9s6osm5g:Wsus0EWg"// cloth config api 26.1.154+neoforge
+    implementation "maven.modrinth:9s6osm5g:izKINKFg"// cloth config api 26.1.154+neoforge
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
