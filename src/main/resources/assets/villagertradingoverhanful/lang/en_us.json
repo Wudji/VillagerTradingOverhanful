@@ -1,4 +1,5 @@
 {
+  "screen.villagertradingoverhanful.merchant_title": "%s - %s",
   "screen.villagertradingoverhanful.options": "Options",
   "screen.villagertradingoverhanful.trade_once": "Trade once",
   "screen.villagertradingoverhanful.trade_stack": "Trade stack",
@@ -13,8 +14,8 @@
   "screen.villagertradingoverhanful.offer_tooltip": "Left click: select   Right click: favorite",
   "screen.villagertradingoverhanful.options_title": "Trading desk options",
   "screen.villagertradingoverhanful.general": "General",
-  "screen.villagertradingoverhanful.batch_limit": "Maximum stack trades",
-  "screen.villagertradingoverhanful.hide_unavailable": "Hide exhausted offers",
+  "screen.villagertradingoverhanful.batch_limit": "Maximum stack trades: %s",
+  "screen.villagertradingoverhanful.hide_unavailable": "Hide exhausted offers: %s",
   "screen.villagertradingoverhanful.filter.all": "All",
   "screen.villagertradingoverhanful.filter.ready": "Ready",
   "screen.villagertradingoverhanful.filter.starred": "Starred",

@@ -1,6 +1,6 @@
 package com.wudji.villagertradingoverhanful.preferences;
 
-import net.neoforged.fml.loading.FMLPaths;
+import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,7 +12,6 @@ import java.util.Properties;
 import java.util.Set;
 
 public final class TradingDeskPreferences {
-
     private static final Path FILE = FMLPaths.CONFIGDIR.get().resolve("villager-trading-desk.properties");
     private static final Set<String> FAVORITES = new HashSet<>();
     private static int batchLimit = 32;

@@ -1,4 +1,5 @@
 {
+  "screen.villagertradingoverhanful.merchant_title": "%s - %s",
   "screen.villagertradingoverhanful.options": "选项",
   "screen.villagertradingoverhanful.trade_once": "交易一次",
   "screen.villagertradingoverhanful.trade_stack": "批量交易",
@@ -13,8 +14,8 @@
   "screen.villagertradingoverhanful.offer_tooltip": "左键：选择   右键：收藏",
   "screen.villagertradingoverhanful.options_title": "交易面板选项",
   "screen.villagertradingoverhanful.general": "常规",
-  "screen.villagertradingoverhanful.batch_limit": "批量交易上限",
-  "screen.villagertradingoverhanful.hide_unavailable": "隐藏已售罄交易",
+  "screen.villagertradingoverhanful.batch_limit": "批量交易上限：%s",
+  "screen.villagertradingoverhanful.hide_unavailable": "隐藏已售罄交易：%s",
   "screen.villagertradingoverhanful.filter.all": "全部",
   "screen.villagertradingoverhanful.filter.ready": "可交易",
   "screen.villagertradingoverhanful.filter.starred": "收藏",

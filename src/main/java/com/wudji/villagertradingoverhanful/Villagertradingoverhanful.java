@@ -7,23 +7,22 @@ import com.wudji.villagertradingoverhanful.screen.TradingDeskScreen;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.MerchantMenu;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
 @Mod(Villagertradingoverhanful.MODID)
 public class Villagertradingoverhanful {
 
+    // Define mod id in a common place for everything to reference
     public static final String MODID = "villagertradingoverhanful";
-
+    // Directly reference a slf4j logger
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public Villagertradingoverhanful(
-            IEventBus modEventBus,
-            ModContainer modContainer
-    ) {
+    public Villagertradingoverhanful() {
+        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::onClientSetup);
     }
 
@@ -39,4 +38,5 @@ public class Villagertradingoverhanful {
                     .put(MenuType.MERCHANT, factory);
         });
     }
+
 }
