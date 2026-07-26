@@ -4,6 +4,12 @@ A client-side Fabric mod that replaces the vanilla villager trading screen with 
 
 The mod keeps vanilla villager offers and pricing intact. It changes the client interface only.
 
+| Source     | Link                                                         |
+| ---------- | ------------------------------------------------------------ |
+| CurseForge | [https://www.curseforge.com/minecraft/mc-mods/villager-trading-overhaul](https://www.curseforge.com/minecraft/mc-mods/villager-trading-overhaul) |
+| Modrinth   | [https://modrinth.com/mod/villager-trading-overhaul/](https://modrinth.com/mod/villager-trading-overhaul/) |
+| MCMOD      | Under Review                                                 |
+
 ## Features
 
 - Replaces the standard merchant screen with a two-panel trading desk.
