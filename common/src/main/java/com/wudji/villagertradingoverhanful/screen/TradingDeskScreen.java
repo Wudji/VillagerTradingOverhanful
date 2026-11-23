@@ -57,7 +57,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     private static final int EXPERIENCE_BAR_WIDTH = 28;
     private static final int EXPERIENCE_BAR_HEIGHT = 5;
     private static final Identifier PANEL_TEXTURE = texture("classic_panel");
-    private static final Identifier SLOT_TEXTURE = texture("classic_slot");
+    private static final Identifier SLOT_SPRITE = Identifier.withDefaultNamespace("container/slot");
     private static final Identifier FAVORITE_STAR = texture("favorite_star");
     private static final Identifier FAVORITE_STAR_EMPTY = texture("favorite_star_empty");
     private static final Identifier EXPERIENCE_BAR_CURRENT_SPRITE = Identifier.withDefaultNamespace("container/villager/experience_bar_current");
@@ -325,10 +325,16 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         int nameColor = offer.isOutOfStock() ? OUT_OF_STOCK_COLOR : BUTTON_TEXT_COLOR;
         graphics.text(font, name, x + 90, y + 6, nameColor, false);
 
+        int starX = x + width - 20;
+        int starY = y + 2;
         Identifier star = favorite ? FAVORITE_STAR : FAVORITE_STAR_EMPTY;
-        graphics.blit(RenderPipelines.GUI_TEXTURED, star, x + width - 20, y + 2, 0.0F, 0.0F, 16, 16, 16, 16);
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(starX, starY);
+        graphics.pose().scale(2.0F, 2.0F);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, star, 0, 0, 0.0F, 0.0F, 8, 8, 8, 8);
+        graphics.pose().popMatrix();
 
-        if (button.isHoveredOrFocused()) {
+        if (button.isHovered()) {
             Component tooltip = Component.translatable("screen.villagertradingoverhanful.offer_tooltip").copy()
                     .append(Component.literal("\n"))
                     .append(offer.isOutOfStock()
@@ -373,16 +379,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     }
 
     private static void drawPanel(GuiGraphicsExtractor graphics, int x, int y, int width, int height) {
-        int cap = 5;
-        graphics.blit(RenderPipelines.GUI_TEXTURED, PANEL_TEXTURE, x, y, 0.0F, 0.0F, cap, cap, 20, 20);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, PANEL_TEXTURE, x + width - cap, y, 15.0F, 0.0F, cap, cap, 20, 20);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, PANEL_TEXTURE, x, y + height - cap, 0.0F, 15.0F, cap, cap, 20, 20);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, PANEL_TEXTURE, x + width - cap, y + height - cap, 15.0F, 15.0F, cap, cap, 20, 20);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, PANEL_TEXTURE, x + cap, y, 5.0F, 0.0F, width - cap * 2, cap, 20, 20);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, PANEL_TEXTURE, x + cap, y + height - cap, 5.0F, 15.0F, width - cap * 2, cap, 20, 20);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, PANEL_TEXTURE, x, y + cap, 0.0F, 5.0F, cap, height - cap * 2, 20, 20);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, PANEL_TEXTURE, x + width - cap, y + cap, 15.0F, 5.0F, cap, height - cap * 2, 20, 20);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, PANEL_TEXTURE, x + cap, y + cap, 5.0F, 5.0F, width - cap * 2, height - cap * 2, 20, 20);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, PANEL_TEXTURE, x, y, 0.0F, 0.0F, width, height, width, height);
     }
 
     private static void drawListFrame(GuiGraphicsExtractor graphics, int x, int y, int width, int height) {
@@ -393,7 +390,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     }
 
     private static void drawSlot(GuiGraphicsExtractor graphics, int x, int y) {
-        graphics.blit(RenderPipelines.GUI_TEXTURED, SLOT_TEXTURE, x, y, 0.0F, 0.0F, 18, 18, 18, 18);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_SPRITE, x, y, 18, 18);
     }
 
     private boolean isHoveringItem(int mouseX, int mouseY, int itemX, int itemY) {
