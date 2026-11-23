@@ -164,7 +164,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         graphics.text(font, Component.translatable("screen.villagertradingoverhanful.offer_inputs"), 8, 20, MUTED_COLOR, false);
         graphics.text(font, Component.translatable("screen.villagertradingoverhanful.inventory"), 8, 109, MUTED_COLOR, false);
         if (queuedTrades > 0) {
-            graphics.text(font, Component.translatable("screen.villagertradingoverhanful.queue", queuedTrades), 8, 56, QUEUE_COLOR, false);
+            graphics.text(font, Component.translatable("screen.villagertradingoverhanful.queue", queuedTrades), leftPos + 8, topPos + 56, QUEUE_COLOR, false);
         }
     }
 
