@@ -56,7 +56,9 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     private static final int BUTTON_TEXT_COLOR = 0xFFFFFFFF;
     private static final int EXPERIENCE_BAR_WIDTH = 28;
     private static final int EXPERIENCE_BAR_HEIGHT = 5;
-    private static final Identifier PANEL_TEXTURE = texture("classic_panel");
+    private static final int PANEL_BORDER = 4;
+    private static final Identifier PANEL_TEXTURE = Identifier.withDefaultNamespace("textures/gui/container/generic_54.png");
+    private static final Identifier LIST_TEXTURE = Identifier.withDefaultNamespace("textures/gui/container/villager.png");
     private static final Identifier SLOT_SPRITE = Identifier.withDefaultNamespace("container/slot");
     private static final Identifier FAVORITE_STAR = texture("favorite_star");
     private static final Identifier FAVORITE_STAR_EMPTY = texture("favorite_star_empty");
@@ -198,6 +200,10 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+        if (verticalAmount != 0.0D && amountInput != null && amountInput.isMouseOver(mouseX, mouseY)) {
+            changeAmount((int) Math.signum(verticalAmount));
+            return true;
+        }
         if (mouseX >= leftPos + LIST_FRAME_X && mouseX < leftPos + LIST_FRAME_X + LIST_FRAME_WIDTH && mouseY >= topPos + HEADER_HEIGHT && mouseY < topPos + HEADER_HEIGHT + SCROLLBAR_HEIGHT) {
             int maximumScroll = Math.max(0, visibleOffers.size() - MAX_OFFER_BUTTONS);
             scrollRow = Math.max(0, Math.min(maximumScroll, scrollRow - (int) Math.signum(verticalAmount)));
@@ -328,19 +334,10 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         int starX = x + width - 20;
         int starY = y + 2;
         Identifier star = favorite ? FAVORITE_STAR : FAVORITE_STAR_EMPTY;
-        graphics.pose().pushMatrix();
-        graphics.pose().translate(starX, starY);
-        graphics.pose().scale(2.0F, 2.0F);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, star, 0, 0, 0.0F, 0.0F, 8, 8, 8, 8);
-        graphics.pose().popMatrix();
+        graphics.blit(RenderPipelines.GUI_TEXTURED, star, starX, starY, 0.0F, 0.0F, 16, 16, 16, 16);
 
         if (button.isHovered()) {
-            Component tooltip = Component.translatable("screen.villagertradingoverhanful.offer_tooltip").copy()
-                    .append(Component.literal("\n"))
-                    .append(offer.isOutOfStock()
-                            ? Component.translatable("screen.villagertradingoverhanful.sold_out")
-                            : Component.translatable("screen.villagertradingoverhanful.stock_left", offer.getMaxUses() - offer.getUses()));
-            graphics.setTooltipForNextFrame(font, tooltip, mouseX, mouseY);
+            graphics.setTooltipForNextFrame(font, Component.translatable("screen.villagertradingoverhanful.offer_tooltip"), mouseX, mouseY);
         }
     }
 
@@ -379,14 +376,31 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     }
 
     private static void drawPanel(GuiGraphicsExtractor graphics, int x, int y, int width, int height) {
-        graphics.blit(RenderPipelines.GUI_TEXTURED, PANEL_TEXTURE, x, y, 0.0F, 0.0F, width, height, width, height);
+        int border = PANEL_BORDER;
+        int contentWidth = 176;
+        int contentHeight = 222;
+        int textureWidth = 256;
+        int textureHeight = 256;
+        graphics.blit(RenderPipelines.GUI_TEXTURED, PANEL_TEXTURE, x, y, 0.0F, 0.0F, border, border, border, border, textureWidth, textureHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, PANEL_TEXTURE, x + width - border, y, contentWidth - border, 0.0F, border, border, border, border, textureWidth, textureHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, PANEL_TEXTURE, x, y + height - border, 0.0F, contentHeight - border, border, border, border, border, textureWidth, textureHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, PANEL_TEXTURE, x + width - border, y + height - border, contentWidth - border, contentHeight - border, border, border, border, border, textureWidth, textureHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, PANEL_TEXTURE, x + border, y, border, 0.0F, width - border * 2, border, 1, border, textureWidth, textureHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, PANEL_TEXTURE, x + border, y + height - border, border, contentHeight - border, width - border * 2, border, 1, border, textureWidth, textureHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, PANEL_TEXTURE, x, y + border, 0.0F, border, border, height - border * 2, border, 1, textureWidth, textureHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, PANEL_TEXTURE, x + width - border, y + border, contentWidth - border, border, border, height - border * 2, border, 1, textureWidth, textureHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, PANEL_TEXTURE, x + border, y + border, border, border, width - border * 2, height - border * 2, 1, 1, textureWidth, textureHeight);
     }
 
     private static void drawListFrame(GuiGraphicsExtractor graphics, int x, int y, int width, int height) {
-        graphics.fill(x, y, x + width, y + 1, 0xFF000000);
-        graphics.fill(x, y, x + 1, y + height, 0xFF000000);
-        graphics.fill(x, y + height - 1, x + width, y + height, 0xFF000000);
-        graphics.fill(x + width - 1, y, x + width, y + height, 0xFF000000);
+        int textureWidth = 512;
+        int textureHeight = 256;
+        // Villager trade list inset: dark top/left edge, white bottom/right edge.
+        graphics.blit(RenderPipelines.GUI_TEXTURED, LIST_TEXTURE, x, y, 4.0F, 17.0F, width, 1, 1, 1, textureWidth, textureHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, LIST_TEXTURE, x, y, 4.0F, 17.0F, 1, height, 1, 1, textureWidth, textureHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, LIST_TEXTURE, x, y + height - 1, 5.0F, 158.0F, width, 1, 1, 1, textureWidth, textureHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, LIST_TEXTURE, x + width - 1, y, 100.0F, 20.0F, 1, height, 1, 1, textureWidth, textureHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, LIST_TEXTURE, x + 1, y + 1, 5.0F, 18.0F, width - 2, height - 2, 1, 1, textureWidth, textureHeight);
     }
 
     private static void drawSlot(GuiGraphicsExtractor graphics, int x, int y) {
