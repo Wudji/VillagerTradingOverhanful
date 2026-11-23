@@ -47,7 +47,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     private static final int LIST_FRAME_X = 4;
     private static final int LIST_FRAME_Y = 38;
     private static final int LIST_FRAME_WIDTH = 168;
-    private static final int LIST_FRAME_HEIGHT = 142;
+    private static final int LIST_FRAME_HEIGHT = 140;
     private static final int SCROLLBAR_X = 164;
     private static final int SCROLLBAR_WIDTH = 6;
     private static final int SCROLLBAR_HEIGHT = MAX_OFFER_BUTTONS * ROW_HEIGHT;
@@ -98,18 +98,18 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         int listX = getListX();
         int rightX = getRightX();
         int controlWidth = (getListWidth() - 16) / 3;
-        addRenderableWidget(new VanillaButton(font, listX + 5, topPos + 18, controlWidth, filter.label(), button -> {
+        addRenderableWidget(new VanillaButton(font, listX + 5, topPos + 16, controlWidth, filter.label(), button -> {
             filter = filter.next();
             scrollRow = 0;
             refreshOffers();
             button.setMessage(filter.label());
         }));
-        addRenderableWidget(new VanillaButton(font, listX + 8 + controlWidth, topPos + 18, controlWidth, order.label(), button -> {
+        addRenderableWidget(new VanillaButton(font, listX + 8 + controlWidth, topPos + 16, controlWidth, order.label(), button -> {
             order = order.next();
             refreshOffers();
             button.setMessage(order.label());
         }));
-        addRenderableWidget(new VanillaButton(font, listX + 11 + controlWidth * 2, topPos + 18, controlWidth, Component.translatable("screen.villagertradingoverhanful.options"), button -> Services.PLATFORM.openConfigScreen(this)));
+        addRenderableWidget(new VanillaButton(font, listX + 11 + controlWidth * 2, topPos + 16, controlWidth, Component.translatable("screen.villagertradingoverhanful.options"), button -> Services.PLATFORM.openConfigScreen(this)));
         addRenderableWidget(new VanillaButton(font, rightX + 11, topPos + 66, 73, Component.translatable("screen.villagertradingoverhanful.trade_once"), button -> beginTrades(1)));
         addRenderableWidget(new VanillaButton(font, rightX + 90, topPos + 66, 75, Component.translatable("screen.villagertradingoverhanful.trade_stack"), button -> beginTrades(TradingDeskPreferences.getBatchLimit())));
 
