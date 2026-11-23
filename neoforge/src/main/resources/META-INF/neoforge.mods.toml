@@ -1,0 +1,24 @@
+license = "${license}"
+issueTrackerURL = "https://issue.mengcai.online/"
+[[mods]]
+modId = "${mod_id}"
+version = "${version}"
+displayName = "${mod_name}"
+displayURL = "https://modrinth.com/project/villager-trading-overhaul/"
+logoFile = "assets/${mod_id}/icon.png"
+authors = "${mod_author}"
+description = '''${description}'''
+[[mixins]]
+config = "${mod_id}.mixins.json"
+[[dependencies.${mod_id}]]
+modId = "neoforge"
+type = "required"
+versionRange = "[${neoforge_version},)"
+ordering = "NONE"
+side = "BOTH"
+[[dependencies.${mod_id}]]
+modId = "minecraft"
+type = "required"
+versionRange = "${minecraft_version_range}"
+ordering = "NONE"
+side = "BOTH"
