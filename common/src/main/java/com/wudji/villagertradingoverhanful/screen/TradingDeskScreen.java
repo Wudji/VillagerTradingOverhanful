@@ -1,12 +1,12 @@
 package com.wudji.villagertradingoverhanful.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.wudji.villagertradingoverhanful.Constants;
 import com.wudji.villagertradingoverhanful.mixin.SlotPositionAccessor;
 import com.wudji.villagertradingoverhanful.platform.Services;
 import com.wudji.villagertradingoverhanful.preferences.TradingDeskPreferences;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -34,24 +34,22 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     private static final int HEADER_HEIGHT = 38;
     private static final int FOOTER_HEIGHT = 25;
     private static final int RIGHT_PANEL_HEIGHT = 204;
-    private static final int TEXT_COLOR = 0xFFFFFFFF;
-    private static final int MUTED_COLOR = 0xFFC0C0C0;
-    private static final int OUT_OF_STOCK_COLOR = 0xFFFF7070;
-    private static final int FAVORITE_COLOR = 0xFFFFD45A;
-    private static final int QUEUE_COLOR = 0xFFFFD47A;
+    private static final int TEXT_COLOR = 0xFF404040;
+    private static final int MUTED_COLOR = 0xFF707070;
+    private static final int OUT_OF_STOCK_COLOR = 0xFFAA0000;
+    private static final int FAVORITE_COLOR = 0xFF8B6508;
+    private static final int QUEUE_COLOR = 0xFF6B4E00;
     private static final int EXPERIENCE_BAR_WIDTH = 28;
     private static final int EXPERIENCE_BAR_HEIGHT = 5;
-    private static final Identifier PANEL_SPRITE = Identifier.withDefaultNamespace("popup/background");
-    private static final Identifier ROW_SPRITE = Identifier.withDefaultNamespace("widget/button");
-    private static final Identifier ROW_HIGHLIGHTED_SPRITE = Identifier.withDefaultNamespace("widget/button_highlighted");
-    private static final Identifier ROW_DISABLED_SPRITE = Identifier.withDefaultNamespace("widget/button_disabled");
-    private static final Identifier SLOT_SPRITE = Identifier.withDefaultNamespace("widget/slot_frame");
-    private static final Identifier FIELD_SPRITE = Identifier.withDefaultNamespace("widget/text_field");
+    private static final Identifier PANEL_TEXTURE = texture("classic_panel");
+    private static final Identifier SLOT_TEXTURE = texture("classic_slot");
     private static final Identifier EXPERIENCE_BAR_CURRENT_SPRITE = Identifier.withDefaultNamespace("container/villager/experience_bar_current");
+    private static final Identifier EXPERIENCE_BAR_BACKGROUND_SPRITE = Identifier.withDefaultNamespace("container/villager/experience_bar_background");
     private static final Identifier TRADE_ARROW_SPRITE = Identifier.withDefaultNamespace("container/villager/trade_arrow");
     private static final Identifier TRADE_ARROW_OUT_OF_STOCK_SPRITE = Identifier.withDefaultNamespace("container/villager/trade_arrow_out_of_stock");
 
     private final List<Integer> visibleOffers = new ArrayList<>();
+    private final Inventory inventory;
     private OfferFilter filter = OfferFilter.ALL;
     private OfferOrder order = OfferOrder.VANILLA;
     private int selectedOffer = -1;
@@ -59,11 +57,11 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     private int queuedTrades;
     private int knownOfferCount = -1;
     private int pendingDestinationSlot = -1;
-    private EditBox amountInput;
-    private Button cycleTradesButton;
+    private ClassicEditBox amountInput;
 
     public TradingDeskScreen(MerchantMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
+        this.inventory = inventory;
     }
 
     @Override
@@ -77,38 +75,35 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
 
         int listX = getListX();
         int controlWidth = (getListWidth() - 16) / 3;
-        addRenderableWidget(Button.builder(filter.label(), button -> {
+        addRenderableWidget(new ClassicButton(listX + 5, topPos + 18, controlWidth, filter.label(), button -> {
             filter = filter.next();
             scrollRow = 0;
             refreshOffers();
-            button.setMessage(filter.label());
-        }).bounds(listX + 5, topPos + 18, controlWidth, 18).build());
-        addRenderableWidget(Button.builder(order.label(), button -> {
+            button.setMessage(filter.label().copy().withStyle(net.minecraft.ChatFormatting.DARK_GRAY));
+        }));
+        addRenderableWidget(new ClassicButton(listX + 8 + controlWidth, topPos + 18, controlWidth, order.label(), button -> {
             order = order.next();
             refreshOffers();
-            button.setMessage(order.label());
-        }).bounds(listX + 8 + controlWidth, topPos + 18, controlWidth, 18).build());
-        addRenderableWidget(Button.builder(Component.translatable("screen.villagertradingoverhanful.options"), button -> Services.PLATFORM.openConfigScreen(this)).bounds(listX + 11 + controlWidth * 2, topPos + 18, controlWidth, 18).build());
-        addRenderableWidget(Button.builder(Component.translatable("screen.villagertradingoverhanful.trade_once"), button -> beginTrades(1)).bounds(leftPos + 11, topPos + 67, 73, 19).build());
-        addRenderableWidget(Button.builder(Component.translatable("screen.villagertradingoverhanful.trade_stack"), button -> beginTrades(TradingDeskPreferences.getBatchLimit())).bounds(leftPos + 90, topPos + 67, 75, 19).build());
+            button.setMessage(order.label().copy().withStyle(net.minecraft.ChatFormatting.DARK_GRAY));
+        }));
+        addRenderableWidget(new ClassicButton(listX + 11 + controlWidth * 2, topPos + 18, controlWidth, Component.translatable("screen.villagertradingoverhanful.options"), button -> Services.PLATFORM.openConfigScreen(this)));
+        addRenderableWidget(new ClassicButton(leftPos + 11, topPos + 66, 73, Component.translatable("screen.villagertradingoverhanful.trade_once"), button -> beginTrades(1)));
+        addRenderableWidget(new ClassicButton(leftPos + 90, topPos + 66, 75, Component.translatable("screen.villagertradingoverhanful.trade_stack"), button -> beginTrades(TradingDeskPreferences.getBatchLimit())));
 
-        amountInput = addRenderableWidget(new EditBox(font, leftPos + 11, topPos + 90, 38, 18, Component.translatable("screen.villagertradingoverhanful.amount")));
+        amountInput = addRenderableWidget(new ClassicEditBox(font, leftPos + 11, topPos + 90, 38, Component.translatable("screen.villagertradingoverhanful.amount")));
         amountInput.setValue("1");
         amountInput.setMaxLength(3);
         amountInput.setHint(Component.translatable("screen.villagertradingoverhanful.amount"));
-        addRenderableWidget(Button.builder(Component.literal("−"), button -> changeAmount(-1)).bounds(leftPos + 53, topPos + 90, 22, 18).build());
-        addRenderableWidget(Button.builder(Component.literal("+"), button -> changeAmount(1)).bounds(leftPos + 79, topPos + 90, 22, 18).build());
-        addRenderableWidget(Button.builder(Component.translatable("screen.villagertradingoverhanful.trade_amount"), button -> beginTrades(readAmount())).bounds(leftPos + 105, topPos + 90, 60, 18).build());
+        addRenderableWidget(new ClassicButton(leftPos + 53, topPos + 90, 22, Component.literal("−"), button -> changeAmount(-1)));
+        addRenderableWidget(new ClassicButton(leftPos + 79, topPos + 90, 22, Component.literal("+"), button -> changeAmount(1)));
+        addRenderableWidget(new ClassicButton(leftPos + 105, topPos + 90, 60, Component.translatable("screen.villagertradingoverhanful.trade_amount"), button -> beginTrades(readAmount())));
 
         if (Services.TRADE_CYCLING.isLoaded()) {
             int footerY = topPos + HEADER_HEIGHT + getMaxRows() * ROW_HEIGHT + 2;
-            int cycleWidth = Math.min(72, Math.max(48, getListWidth() - 90));
-            cycleTradesButton = addRenderableWidget(Button.builder(
-                    Component.translatable("screen.villagertradingoverhanful.cycle_trades", Services.TRADE_CYCLING.keyDisplay()),
-                    button -> {
-                        Services.TRADE_CYCLING.cycleTrades();
-                        playCycleSound();
-                    }).bounds(listX + getListWidth() - cycleWidth - 5, footerY + 4, cycleWidth, 16).build());
+            AbstractWidget cycleButton = TradeCyclingButtonFactory.create(listX + getListWidth() - 23, footerY + 4, menu, inventory, getTitle(), () -> Services.TRADE_CYCLING.cycleTrades());
+            if (cycleButton != null) {
+                addRenderableWidget(cycleButton);
+            }
         }
     }
 
@@ -124,16 +119,16 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
 
         int listX = getListX();
         int panelWidth = getListWidth() + RIGHT_PANEL_WIDTH;
-        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, PANEL_SPRITE, listX, topPos, panelWidth, RIGHT_PANEL_HEIGHT);
+        drawPanel(graphics, listX, topPos, panelWidth, RIGHT_PANEL_HEIGHT);
 
         int experienceFill = getExperienceFill();
         if (experienceFill >= 0) {
             int experienceX = leftPos + 168 - EXPERIENCE_BAR_WIDTH;
-            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, FIELD_SPRITE, experienceX - 1, topPos + 9, EXPERIENCE_BAR_WIDTH + 2, EXPERIENCE_BAR_HEIGHT + 2);
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, EXPERIENCE_BAR_BACKGROUND_SPRITE, experienceX, topPos + 10, EXPERIENCE_BAR_WIDTH, EXPERIENCE_BAR_HEIGHT);
         }
 
         for (Slot slot : menu.slots) {
-            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_SPRITE, leftPos + slot.x - 1, topPos + slot.y - 1, 18, 18);
+            drawSlot(graphics, leftPos + slot.x - 1, topPos + slot.y - 1);
         }
 
         if (selectedOffer >= 0 && selectedOffer < menu.getOffers().size()) {
@@ -152,19 +147,19 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         Component merchantTitle = getMerchantTitle();
         int experienceFill = getExperienceFill();
         if (experienceFill < 0) {
-            graphics.text(font, merchantTitle, 88 - font.width(merchantTitle) / 2, 7, TEXT_COLOR, true);
+            graphics.text(font, merchantTitle, 88 - font.width(merchantTitle) / 2, 7, TEXT_COLOR, false);
         } else {
             int experienceX = 168 - EXPERIENCE_BAR_WIDTH;
             String visibleTitle = font.plainSubstrByWidth(merchantTitle.getString(), experienceX - 20);
-            graphics.text(font, visibleTitle, 8, 7, TEXT_COLOR, true);
+            graphics.text(font, visibleTitle, 8, 7, TEXT_COLOR, false);
             if (experienceFill > 0) {
                 graphics.blitSprite(RenderPipelines.GUI_TEXTURED, EXPERIENCE_BAR_CURRENT_SPRITE, 102, 5, 0, 0, experienceX, 10, experienceFill, EXPERIENCE_BAR_HEIGHT);
             }
         }
         graphics.text(font, Component.translatable("screen.villagertradingoverhanful.offer_inputs"), 8, 20, MUTED_COLOR, false);
-        graphics.text(font, Component.translatable("screen.villagertradingoverhanful.inventory"), 8, 109, MUTED_COLOR, false);
+        graphics.text(font, Component.translatable("screen.villagertradingoverhanful.inventory"), 8, 111, MUTED_COLOR, false);
         if (queuedTrades > 0) {
-            graphics.text(font, Component.translatable("screen.villagertradingoverhanful.queue", queuedTrades), leftPos + 8, topPos + 56, QUEUE_COLOR, false);
+            graphics.text(font, Component.translatable("screen.villagertradingoverhanful.queue", queuedTrades), 8, 56, QUEUE_COLOR, false);
         }
     }
 
@@ -244,9 +239,6 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     @Override
     protected void containerTick() {
         super.containerTick();
-        if (cycleTradesButton != null) {
-            cycleTradesButton.active = canCycleTrades();
-        }
         if (knownOfferCount != menu.getOffers().size()) {
             knownOfferCount = menu.getOffers().size();
             refreshOffers();
@@ -287,20 +279,29 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         int rowWidth = getListWidth() - 10;
         int rowHeight = ROW_HEIGHT - 3;
         boolean hovered = mouseX >= x && mouseX < x + rowWidth && mouseY >= y && mouseY < y + rowHeight;
-        Identifier rowSprite = offer.isOutOfStock() ? ROW_DISABLED_SPRITE : (selected || hovered ? ROW_HIGHLIGHTED_SPRITE : ROW_SPRITE);
-        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, rowSprite, x, y, rowWidth, rowHeight);
+        if (selected || hovered) {
+            int background = selected ? 0xFFD2D2D2 : 0xFFDCDCDC;
+            graphics.fill(x, y, x + rowWidth, y + rowHeight, background);
+            graphics.fill(x, y, x + rowWidth, y + 1, 0xFFFFFFFF);
+            graphics.fill(x, y, x + 1, y + rowHeight, 0xFFFFFFFF);
+            graphics.fill(x, y + rowHeight - 1, x + rowWidth, y + rowHeight, 0xFF555555);
+            graphics.fill(x + rowWidth - 1, y, x + rowWidth, y + rowHeight, 0xFF555555);
+        }
+        drawSlot(graphics, x + 2, y + 2);
         renderTradeStack(graphics, offer.getCostA(), x + 3, y + 3);
         if (isHoveringItem(mouseX, mouseY, x + 3, y + 3)) {
             graphics.setTooltipForNextFrame(font, offer.getCostA(), mouseX, mouseY);
             return;
         }
         if (!offer.getCostB().isEmpty()) {
+            drawSlot(graphics, x + 22, y + 2);
             renderTradeStack(graphics, offer.getCostB(), x + 23, y + 3);
             if (isHoveringItem(mouseX, mouseY, x + 23, y + 3)) {
                 graphics.setTooltipForNextFrame(font, offer.getCostB(), mouseX, mouseY);
                 return;
             }
         }
+        drawSlot(graphics, x + 46, y + 2);
         renderTradeStack(graphics, offer.getResult(), x + 47, y + 3);
         if (isHoveringItem(mouseX, mouseY, x + 47, y + 3)) {
             graphics.setTooltipForNextFrame(font, offer.getResult(), mouseX, mouseY);
@@ -334,6 +335,20 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     private void renderTradeStack(GuiGraphicsExtractor graphics, ItemStack stack, int x, int y) {
         graphics.item(stack, x, y);
         graphics.itemDecorations(font, stack, x, y);
+    }
+
+    private static void drawPanel(GuiGraphicsExtractor graphics, int x, int y, int width, int height) {
+        if (width < 8) {
+            graphics.blit(RenderPipelines.GUI_TEXTURED, PANEL_TEXTURE, x, y, 0.0F, 0.0F, width, height, 352, 204);
+            return;
+        }
+        graphics.blit(RenderPipelines.GUI_TEXTURED, PANEL_TEXTURE, x, y, 0.0F, 0.0F, 4, height, 352, 204);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, PANEL_TEXTURE, x + 4, y, 4.0F, 0.0F, width - 8, height, 352, 204);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, PANEL_TEXTURE, x + width - 4, y, 348.0F, 0.0F, 4, height, 352, 204);
+    }
+
+    private static void drawSlot(GuiGraphicsExtractor graphics, int x, int y) {
+        graphics.blit(RenderPipelines.GUI_TEXTURED, SLOT_TEXTURE, x, y, 0.0F, 0.0F, 18, 18, 18, 18);
     }
 
     private boolean isHoveringItem(int mouseX, int mouseY, int itemX, int itemY) {
@@ -494,6 +509,10 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
 
     private int getMaxRows() {
         return Math.max(2, (getListHeight() - HEADER_HEIGHT - FOOTER_HEIGHT) / ROW_HEIGHT);
+    }
+
+    private static Identifier texture(String name) {
+        return Identifier.fromNamespaceAndPath(Constants.MOD_ID, "textures/gui/" + name + ".png");
     }
 
     private enum OfferFilter {

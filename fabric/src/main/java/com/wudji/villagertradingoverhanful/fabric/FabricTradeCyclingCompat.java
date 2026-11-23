@@ -4,7 +4,6 @@ import com.wudji.villagertradingoverhanful.Constants;
 import com.wudji.villagertradingoverhanful.platform.ITradeCyclingCompat;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.input.KeyEvent;
-import net.minecraft.network.chat.Component;
 
 import java.lang.reflect.Method;
 
@@ -41,11 +40,6 @@ public final class FabricTradeCyclingCompat implements ITradeCyclingCompat {
     @Override
     public boolean matchesCycleKey(KeyEvent event) {
         return loaded && cycleKey != null && cycleKey.matches(event);
-    }
-
-    @Override
-    public Component keyDisplay() {
-        return cycleKey == null ? Component.literal("?") : cycleKey.getTranslatedKeyMessage();
     }
 
     @Override

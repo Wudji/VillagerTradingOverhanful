@@ -1,5 +1,5 @@
 license = "${license}"
-issueTrackerURL = "https://issue.mengcai.online/"
+issueTrackerURL = "https://github.com/Wudji/VillagerTradingOverhanful/issues"
 [[mods]]
 modId = "${mod_id}"
 version = "${version}"

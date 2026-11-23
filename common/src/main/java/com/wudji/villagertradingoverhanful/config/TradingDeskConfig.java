@@ -15,9 +15,11 @@ public final class TradingDeskConfig {
         builder.comment("Villager Trading Overhaul client settings.").push("general");
         BATCH_LIMIT = builder
                 .comment("Maximum number of trades performed by the batch trade button.")
+                .translation(Constants.MOD_ID + ".configuration.general.batchLimit")
                 .defineInRange("batchLimit", 32, 1, 128);
         HIDE_UNAVAILABLE = builder
                 .comment("Hide offers that are out of stock.")
+                .translation(Constants.MOD_ID + ".configuration.general.hideUnavailable")
                 .define("hideUnavailable", false);
         builder.pop();
         SPEC = builder.build();
