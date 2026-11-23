@@ -5,7 +5,8 @@
   "name": "${mod_name}",
   "description": "${description}",
   "authors": [
-    "${mod_author}"
+    "Wudji",
+    "Huziyang520"
   ],
   "contact": {
     "homepage": "https://modrinth.com/project/villager-trading-overhaul/",

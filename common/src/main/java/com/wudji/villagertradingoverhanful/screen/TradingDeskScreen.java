@@ -37,10 +37,11 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     private static final int LEFT_PANEL_WIDTH = 176;
     private static final int RIGHT_PANEL_WIDTH = 176;
     private static final int RIGHT_PANEL_X = LEFT_PANEL_WIDTH;
-    private static final int ROW_HEIGHT = 20;
+    private static final int ROW_HEIGHT = 27;
+    private static final int OFFER_BUTTON_HEIGHT = 24;
     private static final int HEADER_HEIGHT = 39;
     private static final int FOOTER_HEIGHT = 25;
-    private static final int MAX_OFFER_BUTTONS = 7;
+    private static final int MAX_OFFER_BUTTONS = 5;
     private static final int OFFER_BUTTON_X = 5;
     private static final int OFFER_BUTTON_WIDTH = 157;
     private static final int LIST_FRAME_X = 4;
@@ -52,6 +53,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     private static final int SCROLLBAR_HEIGHT = MAX_OFFER_BUTTONS * ROW_HEIGHT;
     private static final int TEXT_COLOR = 0xFF404040;
     private static final int MUTED_COLOR = 0xFF707070;
+    private static final int ROW_MUTED_COLOR = 0xFFC0C0C0;
     private static final int OUT_OF_STOCK_COLOR = 0xFFFF6060;
     private static final int BUTTON_TEXT_COLOR = 0xFFFFFFFF;
     private static final int EXPERIENCE_BAR_WIDTH = 28;
@@ -63,7 +65,6 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     private static final Identifier FAVORITE_STAR = texture("favorite_star");
     private static final Identifier FAVORITE_STAR_EMPTY = texture("favorite_star_empty");
     private static final Identifier EXPERIENCE_BAR_CURRENT_SPRITE = Identifier.withDefaultNamespace("container/villager/experience_bar_current");
-    private static final Identifier EXPERIENCE_BAR_BACKGROUND_SPRITE = Identifier.withDefaultNamespace("container/villager/experience_bar_background");
     private static final Identifier TRADE_ARROW_SPRITE = Identifier.withDefaultNamespace("container/villager/trade_arrow");
     private static final Identifier TRADE_ARROW_OUT_OF_STOCK_SPRITE = Identifier.withDefaultNamespace("container/villager/trade_arrow_out_of_stock");
     private static final Identifier SCROLLER_SPRITE = Identifier.withDefaultNamespace("container/villager/scroller");
@@ -123,7 +124,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         addRenderableWidget(new VanillaButton(font, rightX + 105, topPos + 90, 60, Component.translatable("screen.villagertradingoverhanful.trade_amount"), button -> beginTrades(readAmount())));
 
         if (Services.TRADE_CYCLING.isLoaded()) {
-            int footerY = topPos + HEADER_HEIGHT + MAX_OFFER_BUTTONS * ROW_HEIGHT;
+            int footerY = topPos + HEADER_HEIGHT + MAX_OFFER_BUTTONS * ROW_HEIGHT + 2;
             AbstractWidget cycleButton = TradeCyclingButtonFactory.create(listX + LEFT_PANEL_WIDTH - 23, footerY + 4, menu, inventory, getTitle(), () -> Services.TRADE_CYCLING.cycleTrades());
             if (cycleButton != null) {
                 addRenderableWidget(cycleButton);
@@ -148,7 +149,12 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         int experienceFill = getExperienceFill();
         if (experienceFill >= 0) {
             int experienceX = rightX + 168 - EXPERIENCE_BAR_WIDTH;
-            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, EXPERIENCE_BAR_BACKGROUND_SPRITE, experienceX, topPos + 10, EXPERIENCE_BAR_WIDTH, EXPERIENCE_BAR_HEIGHT);
+            int experienceY = topPos + 10;
+            graphics.fill(experienceX, experienceY, experienceX + EXPERIENCE_BAR_WIDTH, experienceY + EXPERIENCE_BAR_HEIGHT, 0xFF0E1110);
+            graphics.fill(experienceX, experienceY, experienceX + EXPERIENCE_BAR_WIDTH, experienceY + 1, 0xFF000000);
+            graphics.fill(experienceX, experienceY + EXPERIENCE_BAR_HEIGHT - 1, experienceX + EXPERIENCE_BAR_WIDTH, experienceY + EXPERIENCE_BAR_HEIGHT, 0xFF000000);
+            graphics.fill(experienceX, experienceY, experienceX + 1, experienceY + EXPERIENCE_BAR_HEIGHT, 0xFF000000);
+            graphics.fill(experienceX + EXPERIENCE_BAR_WIDTH - 1, experienceY, experienceX + EXPERIENCE_BAR_WIDTH, experienceY + EXPERIENCE_BAR_HEIGHT, 0xFF000000);
         }
 
         for (Slot slot : menu.slots) {
@@ -178,7 +184,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
             String visibleTitle = font.plainSubstrByWidth(merchantTitle.getString(), experienceX - 20);
             graphics.text(font, visibleTitle, rightX + 8, 7, TEXT_COLOR, false);
             if (experienceFill > 0) {
-                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, EXPERIENCE_BAR_CURRENT_SPRITE, rightX + experienceX, 10, experienceFill, EXPERIENCE_BAR_HEIGHT);
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, EXPERIENCE_BAR_CURRENT_SPRITE, 102, 5, 1, 1, rightX + experienceX + 1, 11, experienceFill, 3);
             }
         }
         graphics.text(font, Component.translatable("screen.villagertradingoverhanful.offer_inputs"), rightX + 8, 20, MUTED_COLOR, false);
@@ -194,7 +200,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         renderResultPreview(graphics);
         drawScrollbar(graphics);
 
-        int footerY = topPos + HEADER_HEIGHT + MAX_OFFER_BUTTONS * ROW_HEIGHT;
+        int footerY = topPos + HEADER_HEIGHT + MAX_OFFER_BUTTONS * ROW_HEIGHT + 2;
         graphics.text(font, Component.translatable("screen.villagertradingoverhanful.offer_count", visibleOffers.isEmpty() ? 0 : scrollRow + 1, Math.min(scrollRow + MAX_OFFER_BUTTONS, visibleOffers.size()), visibleOffers.size()), leftPos + 7, footerY + 8, MUTED_COLOR, false);
     }
 
@@ -272,7 +278,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     private void createOfferButtons() {
         offerButtons = new OfferButton[MAX_OFFER_BUTTONS];
         for (int row = 0; row < MAX_OFFER_BUTTONS; row++) {
-            OfferButton button = new OfferButton(this, leftPos + OFFER_BUTTON_X, topPos + HEADER_HEIGHT + row * ROW_HEIGHT, OFFER_BUTTON_WIDTH, ROW_HEIGHT);
+            OfferButton button = new OfferButton(this, leftPos + OFFER_BUTTON_X, topPos + HEADER_HEIGHT + row * ROW_HEIGHT, OFFER_BUTTON_WIDTH, OFFER_BUTTON_HEIGHT);
             addRenderableWidget(button);
             offerButtons[row] = button;
         }
@@ -294,49 +300,56 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         int x = button.getX();
         int y = button.getY();
         int width = button.getWidth();
-        int itemY = y + 2;
+        int itemY = y + 4;
 
         if (offerIndex == selectedOffer) {
+            int height = button.getHeight();
             graphics.fill(x, y, x + width, y + 1, 0xFFFFFFFF);
-            graphics.fill(x, y + ROW_HEIGHT - 1, x + width, y + ROW_HEIGHT, 0xFFFFFFFF);
-            graphics.fill(x, y, x + 1, y + ROW_HEIGHT, 0xFFFFFFFF);
-            graphics.fill(x + width - 1, y, x + width, y + ROW_HEIGHT, 0xFFFFFFFF);
+            graphics.fill(x, y + height - 1, x + width, y + height, 0xFFFFFFFF);
+            graphics.fill(x, y, x + 1, y + height, 0xFFFFFFFF);
+            graphics.fill(x + width - 1, y, x + width, y + height, 0xFFFFFFFF);
         }
 
+        ItemStack hoveredStack = null;
         renderItem(graphics, offer.getCostA(), x + 5, itemY);
         if (isHoveringItem(mouseX, mouseY, x + 5, itemY)) {
-            graphics.setTooltipForNextFrame(font, offer.getCostA(), mouseX, mouseY);
-            return;
+            hoveredStack = offer.getCostA();
         }
 
         if (!offer.getCostB().isEmpty()) {
             renderItem(graphics, offer.getCostB(), x + 35, itemY);
             if (isHoveringItem(mouseX, mouseY, x + 35, itemY)) {
-                graphics.setTooltipForNextFrame(font, offer.getCostB(), mouseX, mouseY);
-                return;
+                hoveredStack = offer.getCostB();
             }
         }
 
         Identifier arrowSprite = offer.isOutOfStock() ? TRADE_ARROW_OUT_OF_STOCK_SPRITE : TRADE_ARROW_SPRITE;
-        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, arrowSprite, x + 54, y + 3, 10, 9);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, arrowSprite, x + 54, y + 7, 10, 9);
 
         renderItem(graphics, offer.getResult(), x + 68, itemY);
-        if (isHoveringItem(mouseX, mouseY, x + 68, itemY)) {
-            graphics.setTooltipForNextFrame(font, offer.getResult(), mouseX, mouseY);
-            return;
+        if (hoveredStack == null && isHoveringItem(mouseX, mouseY, x + 68, itemY)) {
+            hoveredStack = offer.getResult();
         }
 
-        int nameWidth = width - 90 - 22;
-        String name = font.plainSubstrByWidth(offer.getResult().getHoverName().getString(), Math.max(0, nameWidth));
+        int textWidth = width - 86 - 20;
+        String name = font.plainSubstrByWidth(offer.getResult().getHoverName().getString(), Math.max(0, textWidth));
         int nameColor = offer.isOutOfStock() ? OUT_OF_STOCK_COLOR : BUTTON_TEXT_COLOR;
-        graphics.text(font, name, x + 90, y + 6, nameColor, false);
+        graphics.text(font, name, x + 86, y + 3, nameColor, false);
 
-        int starX = x + width - 20;
-        int starY = y + 2;
+        Component stock = offer.isOutOfStock()
+                ? Component.translatable("screen.villagertradingoverhanful.sold_out")
+                : Component.translatable("screen.villagertradingoverhanful.stock_left", offer.getMaxUses() - offer.getUses());
+        int stockColor = offer.isOutOfStock() ? OUT_OF_STOCK_COLOR : ROW_MUTED_COLOR;
+        graphics.text(font, font.plainSubstrByWidth(stock.getString(), Math.max(0, textWidth)), x + 86, y + 13, stockColor, false);
+
+        int starX = x + width - 18;
+        int starY = y + 4;
         Identifier star = favorite ? FAVORITE_STAR : FAVORITE_STAR_EMPTY;
         graphics.blit(RenderPipelines.GUI_TEXTURED, star, starX, starY, 0.0F, 0.0F, 16, 16, 16, 16);
 
-        if (button.isHovered()) {
+        if (hoveredStack != null) {
+            graphics.setTooltipForNextFrame(font, hoveredStack, mouseX, mouseY);
+        } else if (button.isHovered()) {
             graphics.setTooltipForNextFrame(font, Component.translatable("screen.villagertradingoverhanful.offer_tooltip"), mouseX, mouseY);
         }
     }
