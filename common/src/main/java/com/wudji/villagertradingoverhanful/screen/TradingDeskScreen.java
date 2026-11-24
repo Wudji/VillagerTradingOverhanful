@@ -140,7 +140,6 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
             extractBlurredBackground(graphics);
             extractMenuBackground(graphics);
         }
-        minecraft.gui.hud.extractDeferredSubtitles();
 
         drawPanel(graphics, leftPos, topPos, PANEL_WIDTH, PANEL_HEIGHT);
         drawListFrame(graphics, leftPos + LIST_FRAME_X, topPos + LIST_FRAME_Y, LIST_FRAME_WIDTH, LIST_FRAME_HEIGHT);
