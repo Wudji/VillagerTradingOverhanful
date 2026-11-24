@@ -19,11 +19,17 @@
   "entrypoints": {
     "main": [
       "com.wudji.villagertradingoverhanful.fabric.VillagertradingoverhanfulFabric"
+    ],
+    "modmenu": [
+      "com.wudji.villagertradingoverhanful.fabric.ModMenuIntegration"
     ]
   },
   "mixins": [
     "villagertradingoverhanful.mixins.json"
   ],
+  "recommends": {
+    "modmenu": "*"
+  },
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric-api": "*",

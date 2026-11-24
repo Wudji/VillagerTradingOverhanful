@@ -354,15 +354,15 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         int contentHeight = 222;
         int textureWidth = 256;
         int textureHeight = 256;
-        blit(graphics, PANEL_TEXTURE, x, y, 0, 0, border, border, textureWidth, textureHeight);
-        blit(graphics, PANEL_TEXTURE, x + width - border, y, contentWidth - border, 0, border, border, textureWidth, textureHeight);
-        blit(graphics, PANEL_TEXTURE, x, y + height - border, 0, contentHeight - border, border, border, textureWidth, textureHeight);
-        blit(graphics, PANEL_TEXTURE, x + width - border, y + height - border, contentWidth - border, contentHeight - border, border, border, textureWidth, textureHeight);
-        blit(graphics, PANEL_TEXTURE, x + border, y, border, 0, width - border * 2, border, textureWidth, textureHeight);
-        blit(graphics, PANEL_TEXTURE, x + border, y + height - border, border, contentHeight - border, width - border * 2, border, textureWidth, textureHeight);
-        blit(graphics, PANEL_TEXTURE, x, y + border, 0, border, border, height - border * 2, textureWidth, textureHeight);
-        blit(graphics, PANEL_TEXTURE, x + width - border, y + border, contentWidth - border, border, border, height - border * 2, textureWidth, textureHeight);
-        blit(graphics, PANEL_TEXTURE, x + border, y + border, border, border, width - border * 2, height - border * 2, textureWidth, textureHeight);
+        blitStretched(graphics, PANEL_TEXTURE, x, y, border, border, 0, 0, border, border, textureWidth, textureHeight);
+        blitStretched(graphics, PANEL_TEXTURE, x + width - border, y, border, border, contentWidth - border, 0, border, border, textureWidth, textureHeight);
+        blitStretched(graphics, PANEL_TEXTURE, x, y + height - border, border, border, 0, contentHeight - border, border, border, textureWidth, textureHeight);
+        blitStretched(graphics, PANEL_TEXTURE, x + width - border, y + height - border, border, border, contentWidth - border, contentHeight - border, border, border, textureWidth, textureHeight);
+        blitStretched(graphics, PANEL_TEXTURE, x + border, y, width - border * 2, border, border, 0, 1, border, textureWidth, textureHeight);
+        blitStretched(graphics, PANEL_TEXTURE, x + border, y + height - border, width - border * 2, border, border, contentHeight - border, 1, border, textureWidth, textureHeight);
+        blitStretched(graphics, PANEL_TEXTURE, x, y + border, border, height - border * 2, 0, border, border, 1, textureWidth, textureHeight);
+        blitStretched(graphics, PANEL_TEXTURE, x + width - border, y + border, border, height - border * 2, contentWidth - border, border, border, 1, textureWidth, textureHeight);
+        blitStretched(graphics, PANEL_TEXTURE, x + border, y + border, width - border * 2, height - border * 2, border, border, 1, 1, textureWidth, textureHeight);
     }
 
     private static void drawListFrame(GuiGraphics graphics, int x, int y, int width, int height) {
@@ -380,7 +380,11 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     }
 
     private static void blit(GuiGraphics graphics, ResourceLocation texture, int x, int y, int u, int v, int width, int height, int textureWidth, int textureHeight) {
-        graphics.blit(texture, x, y, u, v, width, height, textureWidth, textureHeight);
+        blitStretched(graphics, texture, x, y, width, height, u, v, width, height, textureWidth, textureHeight);
+    }
+
+    private static void blitStretched(GuiGraphics graphics, ResourceLocation texture, int x, int y, int width, int height, int u, int v, int uWidth, int vHeight, int textureWidth, int textureHeight) {
+        graphics.blit(texture, x, y, width, height, (float) u, (float) v, uWidth, vHeight, textureWidth, textureHeight);
     }
 
     private static ResourceLocation texture(String name) {
