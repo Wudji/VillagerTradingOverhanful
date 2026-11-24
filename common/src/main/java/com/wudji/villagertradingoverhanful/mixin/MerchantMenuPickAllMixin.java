@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class MerchantMenuPickAllMixin {
     @Inject(method = "canTakeItemForPickAll", at = @At("HEAD"), cancellable = true)
     private void villagerTradingOverhaul$allowPickAll(ItemStack stack, Slot slot, CallbackInfoReturnable<Boolean> cir) {
-        if (Minecraft.getInstance().screen instanceof TradingDeskScreen) {
+        if (slot.index >= 3 && Minecraft.getInstance().screen instanceof TradingDeskScreen) {
             cir.setReturnValue(true);
         }
     }
