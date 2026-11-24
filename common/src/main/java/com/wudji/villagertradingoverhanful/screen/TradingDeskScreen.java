@@ -75,7 +75,8 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     private int pendingDestinationSlot = -1;
     private EditBox amountInput;
     private OfferButton[] offerButtons = new OfferButton[0];
-    private ItemStack hoveredStack;
+    private ItemStack tooltipStack;
+    private boolean offerTooltipHovered;
 
     public TradingDeskScreen(MerchantMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -175,12 +176,20 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        tooltipStack = null;
+        offerTooltipHovered = false;
         super.render(graphics, mouseX, mouseY, delta);
         renderResultPreview(graphics);
         drawScrollbar(graphics);
 
         int footerY = topPos + HEADER_HEIGHT + MAX_OFFER_BUTTONS * ROW_HEIGHT + 2;
         graphics.drawString(font, Component.translatable("screen.villagertradingoverhanful.offer_count", visibleOffers.isEmpty() ? 0 : scrollRow + 1, Math.min(scrollRow + MAX_OFFER_BUTTONS, visibleOffers.size()), visibleOffers.size()), leftPos + 7, footerY + 8, MUTED_COLOR, false);
+
+        if (tooltipStack != null) {
+            graphics.renderTooltip(font, tooltipStack, mouseX, mouseY);
+        } else if (offerTooltipHovered) {
+            graphics.renderTooltip(font, Component.translatable("screen.villagertradingoverhanful.offer_tooltip"), mouseX, mouseY);
+        }
     }
 
     @Override
@@ -261,7 +270,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     private void renderOfferContents(GuiGraphics graphics, Button button, int offerIndex, int mouseX, int mouseY) {
         MerchantOffer offer = menu.getOffers().get(offerIndex);
         boolean favorite = TradingDeskPreferences.isFavorite(offerKey(offer));
-        hoveredStack = null;
+        ItemStack hoveredStack = null;
         int x = button.getX();
         int y = button.getY();
         int width = button.getWidth();
@@ -309,9 +318,9 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         blit(graphics, favorite ? FAVORITE_STAR : FAVORITE_STAR_EMPTY, x + width - 18, y + 4, 0, 0, 16, 16, 16, 16);
 
         if (hoveredStack != null) {
-            graphics.renderTooltip(font, hoveredStack, mouseX, mouseY);
+            tooltipStack = hoveredStack;
         } else if (button.isMouseOver(mouseX, mouseY)) {
-            graphics.renderTooltip(font, Component.translatable("screen.villagertradingoverhanful.offer_tooltip"), mouseX, mouseY);
+            offerTooltipHovered = true;
         }
     }
 
