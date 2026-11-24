@@ -5,6 +5,7 @@ import com.wudji.villagertradingoverhanful.Constants;
 import com.wudji.villagertradingoverhanful.mixin.SlotPositionAccessor;
 import com.wudji.villagertradingoverhanful.platform.Services;
 import com.wudji.villagertradingoverhanful.preferences.TradingDeskPreferences;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -23,6 +24,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.trading.MerchantOffer;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -66,6 +68,8 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     private static final Identifier SCROLLER_SPRITE = Identifier.withDefaultNamespace("container/villager/scroller");
     private static final Identifier SCROLLER_DISABLED_SPRITE = Identifier.withDefaultNamespace("container/villager/scroller_disabled");
     private static final Identifier SCROLLER_BACKGROUND_SPRITE = Identifier.withDefaultNamespace("widget/scroller_background");
+    // 26.2 把字幕提取挪到 HUD 并从 Gui 删掉了这个方法，找不到即说明原版管线已在 extractRenderState 里处理。
+    private static final Method EXTRACT_DEFERRED_SUBTITLES = resolveDeferredSubtitles();
 
     private final List<Integer> visibleOffers = new ArrayList<>();
     private final Inventory inventory;
@@ -129,6 +133,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
             extractMenuBackground(graphics);
         }
 
+        extractDeferredSubtitles();
         drawPanel(graphics, leftPos, topPos, PANEL_WIDTH, PANEL_HEIGHT);
         drawListFrame(graphics, leftPos + LIST_FRAME_X, topPos + LIST_FRAME_Y, LIST_FRAME_WIDTH, LIST_FRAME_HEIGHT);
 
@@ -353,6 +358,25 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     private void toggleFavorite(int offerIndex) {
         TradingDeskPreferences.toggleFavorite(offerKey(menu.getOffers().get(offerIndex)));
         refreshOffers();
+    }
+
+    private static Method resolveDeferredSubtitles() {
+        try {
+            return Gui.class.getMethod("extractDeferredSubtitles");
+        } catch (NoSuchMethodException exception) {
+            return null;
+        }
+    }
+
+    private void extractDeferredSubtitles() {
+        if (EXTRACT_DEFERRED_SUBTITLES == null) {
+            return;
+        }
+        try {
+            EXTRACT_DEFERRED_SUBTITLES.invoke(minecraft.gui);
+        } catch (ReflectiveOperationException exception) {
+            Constants.LOG.warn("Could not extract deferred subtitles", exception);
+        }
     }
 
     private static void drawPanel(GuiGraphicsExtractor graphics, int x, int y, int width, int height) {
