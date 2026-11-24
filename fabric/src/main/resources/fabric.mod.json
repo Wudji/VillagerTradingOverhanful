@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "villagertradingoverhanful",
+  "version": "${version}",
+  "name": "Villager Trading Overhaul",
+  "description": "${description}",
+  "authors": [
+    "Wudji",
+    "Huziyang520"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/project/villager-trading-overhaul/",
+    "issues": "https://github.com/Wudji/VillagerTradingOverhanful/issues",
+    "sources": "https://github.com/Wudji/VillagerTradingOverhanful"
+  },
+  "license": "MIT",
+  "icon": "assets/villagertradingoverhanful/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "main": [
+      "com.wudji.villagertradingoverhanful.fabric.VillagertradingoverhanfulFabric"
+    ]
+  },
+  "mixins": [
+    "villagertradingoverhanful.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "1.20.1",
+    "cloth-config": "*"
+  }
+}
+
