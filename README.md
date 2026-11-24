@@ -40,7 +40,7 @@ Available options:
 
 ## Required dependencies
 
-For Fabric versions, Fabric API and Cloth Config API are required.
+For Fabric versions, Fabric API and Forge Config API Port are required.
 
 No server-side component is included. The mod uses the normal merchant trading flow and does not add, remove, or rebalance villager offers.
 

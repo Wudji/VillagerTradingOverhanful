@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${version}",
+  "name": "${mod_name}",
+  "description": "${description}",
+  "authors": [
+    "Wudji",
+    "Huziyang520"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/project/villager-trading-overhaul/",
+    "issues": "https://github.com/Wudji/VillagerTradingOverhanful/issues",
+    "sources": "https://github.com/Wudji/VillagerTradingOverhanful"
+  },
+  "license": "${license}",
+  "icon": "assets/${mod_id}/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "main": [
+      "com.wudji.villagertradingoverhanful.fabric.VillagertradingoverhanfulFabric"
+    ],
+    "modmenu": [
+      "com.wudji.villagertradingoverhanful.fabric.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "${mod_id}.mixins.json"
+  ],
+  "recommends": {
+    "modmenu": "*"
+  },
+  "depends": {
+    "fabricloader": ">=${fabric_loader_version}",
+    "fabric-api": "*",
+    "forgeconfigapiport": "*",
+    "minecraft": "${minecraft_version}",
+    "java": ">=${java_version}"
+  }
+}
