@@ -68,7 +68,7 @@ public final class FabricPlatformHelper implements IPlatformHelper {
         }
     }
 
-    private Screen createConfigScreen(Screen parent) {
+    public static Screen createConfigScreen(Screen parent) {
         ConfigBuilder builder = ConfigBuilder.create()
                 .setParentScreen(parent)
                 .setTitle(Component.translatable("screen.villagertradingoverhanful.options_title"));

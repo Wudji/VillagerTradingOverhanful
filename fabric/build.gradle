@@ -25,6 +25,10 @@ sourceSets.main {
 }
 
 repositories {
+    maven {
+        name = "TerraformersMC"
+        url = "https://maven.terraformersmc.com/releases/"
+    }
     exclusiveContent {
         forRepository {
             maven {
@@ -44,6 +48,7 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     modImplementation "maven.modrinth:9s6osm5g:${project.cloth_config_version}"
+    modCompileOnly "com.terraformersmc:modmenu:7.2.2"
 }
 
 processResources {
