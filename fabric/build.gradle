@@ -1,0 +1,90 @@
+plugins {
+    id 'net.fabricmc.fabric-loom-remap' version '1.17.21'
+    id 'maven-publish'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = "${project.mod_id}-${project.mod_version}-fabric-${project.minecraft_archive_name}"
+    tasks.withType(AbstractArchiveTask).configureEach {
+        archiveVersion = ""
+    }
+}
+
+sourceSets.main {
+    java.srcDir '../common/src/main/java'
+    resources.srcDir '../common/src/main/resources'
+}
+
+repositories {
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    modImplementation "maven.modrinth:9s6osm5g:${project.cloth_config_version}"
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "minecraft_version", project.minecraft_version
+    inputs.property "loader_version", project.loader_version
+    inputs.property "mod_author", project.mod_author
+    inputs.property "description", project.description
+    inputs.property "cloth_version", project.cloth_config_version
+    filteringCharset "UTF-8"
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version,
+                "minecraft_version": project.minecraft_version,
+                "mod_author": project.mod_author,
+                "description": project.description,
+                "cloth_version": project.cloth_config_version,
+                "loader_version": project.loader_version
+    }
+}
+
+def targetJavaVersion = project.java_version.toInteger()
+tasks.withType(JavaCompile).configureEach {
+    it.options.encoding = "UTF-8"
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        it.options.release.set(targetJavaVersion)
+    }
+}
+
+java {
+    sourceCompatibility = JavaVersion.toVersion(targetJavaVersion)
+    targetCompatibility = JavaVersion.toVersion(targetJavaVersion)
+    withSourcesJar()
+}
+
+jar {
+    from("../LICENSE.txt") {
+        rename { "${it}_${project.mod_id}" }
+    }
+}
+
+publishing {
+    publications {
+        create("mavenJava", MavenPublication) {
+            artifactId = project.mod_id
+            from components.java
+        }
+    }
+}
+
