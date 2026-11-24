@@ -74,10 +74,8 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     private int knownOfferCount = -1;
     private int pendingDestinationSlot = -1;
     private EditBox amountInput;
-    private Button[] offerButtons = new Button[0];
-    private int[] offerIndices = new int[0];
+    private OfferButton[] offerButtons = new OfferButton[0];
     private ItemStack hoveredStack;
-    private int hoveredRow = -1;
 
     public TradingDeskScreen(MerchantMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -96,28 +94,30 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         int listX = getListX();
         int rightX = getRightX();
         int controlWidth = (getListWidth() - 16) / 3;
-        addRenderableWidget(Button.builder(filter.label(), button -> {
+        addRenderableWidget(new VanillaButton(font, listX + 5, topPos + 16, controlWidth, filter.label(), button -> {
             filter = filter.next();
             scrollRow = 0;
             refreshOffers();
             button.setMessage(filter.label());
-        }).bounds(listX + 5, topPos + 16, controlWidth, 20).build());
-        addRenderableWidget(Button.builder(order.label(), button -> {
+        }));
+        addRenderableWidget(new VanillaButton(font, listX + 8 + controlWidth, topPos + 16, controlWidth, order.label(), button -> {
             order = order.next();
             refreshOffers();
             button.setMessage(order.label());
-        }).bounds(listX + 8 + controlWidth, topPos + 16, controlWidth, 20).build());
-        addRenderableWidget(Button.builder(Component.translatable("screen.villagertradingoverhanful.options"), button -> Services.PLATFORM.openConfigScreen(this)).bounds(listX + 11 + controlWidth * 2, topPos + 16, controlWidth, 20).build());
-        addRenderableWidget(Button.builder(Component.translatable("screen.villagertradingoverhanful.trade_once"), button -> beginTrades(1)).bounds(rightX + 11, topPos + 66, 73, 20).build());
-        addRenderableWidget(Button.builder(Component.translatable("screen.villagertradingoverhanful.trade_stack"), button -> beginTrades(TradingDeskPreferences.getBatchLimit())).bounds(rightX + 90, topPos + 66, 75, 20).build());
+        }));
+        addRenderableWidget(new VanillaButton(font, listX + 11 + controlWidth * 2, topPos + 16, controlWidth, Component.translatable("screen.villagertradingoverhanful.options"), button -> Services.PLATFORM.openConfigScreen(this)));
+        addRenderableWidget(new VanillaButton(font, rightX + 11, topPos + 66, 73, Component.translatable("screen.villagertradingoverhanful.trade_once"), button -> beginTrades(1)));
+        addRenderableWidget(new VanillaButton(font, rightX + 90, topPos + 66, 75, Component.translatable("screen.villagertradingoverhanful.trade_stack"), button -> beginTrades(TradingDeskPreferences.getBatchLimit())));
 
         amountInput = addRenderableWidget(new EditBox(font, rightX + 11, topPos + 90, 38, 20, Component.translatable("screen.villagertradingoverhanful.amount")));
         amountInput.setValue("1");
         amountInput.setMaxLength(3);
         amountInput.setHint(Component.translatable("screen.villagertradingoverhanful.amount"));
-        addRenderableWidget(Button.builder(Component.literal("−"), button -> changeAmount(-1)).bounds(rightX + 53, topPos + 90, 22, 20).build());
-        addRenderableWidget(Button.builder(Component.literal("+"), button -> changeAmount(1)).bounds(rightX + 79, topPos + 90, 22, 20).build());
-        addRenderableWidget(Button.builder(Component.translatable("screen.villagertradingoverhanful.trade_amount"), button -> beginTrades(readAmount())).bounds(rightX + 105, topPos + 90, 60, 20).build());
+        amountInput.setTextColor(BUTTON_TEXT_COLOR);
+        amountInput.setTextShadow(false);
+        addRenderableWidget(new VanillaButton(font, rightX + 53, topPos + 90, 22, Component.literal("−"), button -> changeAmount(-1)));
+        addRenderableWidget(new VanillaButton(font, rightX + 79, topPos + 90, 22, Component.literal("+"), button -> changeAmount(1)));
+        addRenderableWidget(new VanillaButton(font, rightX + 105, topPos + 90, 60, Component.translatable("screen.villagertradingoverhanful.trade_amount"), button -> beginTrades(readAmount())));
     }
 
     @Override
@@ -180,24 +180,8 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         renderResultPreview(graphics);
         drawScrollbar(graphics);
 
-        hoveredStack = null;
-        hoveredRow = -1;
-        for (int row = 0; row < offerButtons.length; row++) {
-            Button button = offerButtons[row];
-            int offerIndex = offerIndices[row];
-            if (button.visible && offerIndex >= 0) {
-                renderOfferContents(graphics, button, offerIndex, mouseX, mouseY);
-            }
-        }
-
         int footerY = topPos + HEADER_HEIGHT + MAX_OFFER_BUTTONS * ROW_HEIGHT + 2;
         graphics.drawString(font, Component.translatable("screen.villagertradingoverhanful.offer_count", visibleOffers.isEmpty() ? 0 : scrollRow + 1, Math.min(scrollRow + MAX_OFFER_BUTTONS, visibleOffers.size()), visibleOffers.size()), leftPos + 7, footerY + 8, MUTED_COLOR, false);
-
-        if (hoveredStack != null) {
-            graphics.setTooltipForNextFrame(font, hoveredStack, mouseX, mouseY);
-        } else if (hoveredRow >= 0) {
-            graphics.setTooltipForNextFrame(font, Component.translatable("screen.villagertradingoverhanful.offer_tooltip"), mouseX, mouseY);
-        }
     }
 
     @Override
@@ -213,22 +197,6 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
             return true;
         }
         return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
-    }
-
-    @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT) {
-            int row = (int) ((event.y() - (topPos + HEADER_HEIGHT)) / ROW_HEIGHT);
-            if (row >= 0 && row < MAX_OFFER_BUTTONS && row < offerIndices.length) {
-                int offerIndex = offerIndices[row];
-                if (offerIndex >= 0) {
-                    TradingDeskPreferences.toggleFavorite(offerKey(menu.getOffers().get(offerIndex)));
-                    refreshOffers();
-                    return true;
-                }
-            }
-        }
-        return super.mouseClicked(event, doubleClick);
     }
 
     @Override
@@ -273,17 +241,9 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     }
 
     private void createOfferButtons() {
-        offerButtons = new Button[MAX_OFFER_BUTTONS];
-        offerIndices = new int[MAX_OFFER_BUTTONS];
+        offerButtons = new OfferButton[MAX_OFFER_BUTTONS];
         for (int row = 0; row < MAX_OFFER_BUTTONS; row++) {
-            offerIndices[row] = -1;
-            final int rowIndex = row;
-            Button button = Button.builder(Component.empty(), pressed -> {
-                int offerIndex = offerIndices[rowIndex];
-                if (offerIndex >= 0) {
-                    selectOffer(offerIndex);
-                }
-            }).bounds(leftPos + OFFER_BUTTON_X, topPos + HEADER_HEIGHT + row * ROW_HEIGHT, OFFER_BUTTON_WIDTH, OFFER_BUTTON_HEIGHT).build();
+            OfferButton button = new OfferButton(this, leftPos + OFFER_BUTTON_X, topPos + HEADER_HEIGHT + row * ROW_HEIGHT, OFFER_BUTTON_WIDTH, OFFER_BUTTON_HEIGHT);
             addRenderableWidget(button);
             offerButtons[row] = button;
         }
@@ -295,16 +255,14 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         }
         for (int row = 0; row < offerButtons.length; row++) {
             int offerIndex = scrollRow + row < visibleOffers.size() ? visibleOffers.get(scrollRow + row) : -1;
-            offerIndices[row] = offerIndex;
-            offerButtons[row].visible = offerIndex >= 0;
-            offerButtons[row].active = offerIndex >= 0;
-            offerButtons[row].setMessage(Component.empty());
+            offerButtons[row].setOfferIndex(offerIndex);
         }
     }
 
     private void renderOfferContents(GuiGraphics graphics, Button button, int offerIndex, int mouseX, int mouseY) {
         MerchantOffer offer = menu.getOffers().get(offerIndex);
         boolean favorite = TradingDeskPreferences.isFavorite(offerKey(offer));
+        hoveredStack = null;
         int x = button.getX();
         int y = button.getY();
         int width = button.getWidth();
@@ -321,14 +279,12 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         renderItem(graphics, offer.getCostA(), x + 5, itemY);
         if (isHoveringItem(mouseX, mouseY, x + 5, itemY)) {
             hoveredStack = offer.getCostA();
-            hoveredRow = offerIndex;
         }
 
         if (!offer.getCostB().isEmpty()) {
             renderItem(graphics, offer.getCostB(), x + 35, itemY);
             if (isHoveringItem(mouseX, mouseY, x + 35, itemY)) {
                 hoveredStack = offer.getCostB();
-                hoveredRow = offerIndex;
             }
         }
 
@@ -338,11 +294,6 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         renderItem(graphics, offer.getResult(), x + 68, itemY);
         if (hoveredStack == null && isHoveringItem(mouseX, mouseY, x + 68, itemY)) {
             hoveredStack = offer.getResult();
-            hoveredRow = offerIndex;
-        }
-
-        if (hoveredRow < 0 && mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + button.getHeight()) {
-            hoveredRow = offerIndex;
         }
 
         int textWidth = width - 86 - 20;
@@ -357,6 +308,12 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         graphics.drawString(font, font.plainSubstrByWidth(stock.getString(), Math.max(0, textWidth)), x + 86, y + 13, stockColor, false);
 
         blit(graphics, favorite ? FAVORITE_STAR : FAVORITE_STAR_EMPTY, x + width - 18, y + 4, 0, 0, 16, 16, 16, 16);
+
+        if (hoveredStack != null) {
+            graphics.setTooltipForNextFrame(font, hoveredStack, mouseX, mouseY);
+        } else if (button.isMouseOver(mouseX, mouseY)) {
+            graphics.setTooltipForNextFrame(font, Component.translatable("screen.villagertradingoverhanful.offer_tooltip"), mouseX, mouseY);
+        }
     }
 
     private void renderResultPreview(GuiGraphics graphics) {
@@ -582,6 +539,47 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
 
     private int getRightX() {
         return leftPos + RIGHT_PANEL_X;
+    }
+
+    private static final class OfferButton extends Button.Plain {
+        private final TradingDeskScreen screen;
+        private int offerIndex = -1;
+
+        private OfferButton(TradingDeskScreen screen, int x, int y, int width, int height) {
+            super(x, y, width, height, Component.empty(), button -> {
+                OfferButton self = (OfferButton) button;
+                if (self.offerIndex >= 0) {
+                    self.screen.selectOffer(self.offerIndex);
+                }
+            }, DEFAULT_NARRATION);
+            this.screen = screen;
+        }
+
+        private void setOfferIndex(int offerIndex) {
+            this.offerIndex = offerIndex;
+            this.visible = offerIndex >= 0;
+            this.active = offerIndex >= 0;
+        }
+
+        @Override
+        protected void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+            if (!visible || offerIndex < 0) {
+                return;
+            }
+            super.renderContents(graphics, mouseX, mouseY, partialTick);
+            screen.renderOfferContents(graphics, this, offerIndex, mouseX, mouseY);
+        }
+
+        @Override
+        public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+            if (visible && active && offerIndex >= 0 && event.button() == InputConstants.MOUSE_BUTTON_RIGHT
+                    && event.x() >= getX() && event.x() < getX() + getWidth()
+                    && event.y() >= getY() && event.y() < getY() + getHeight()) {
+                screen.toggleFavorite(offerIndex);
+                return true;
+            }
+            return super.mouseClicked(event, doubleClick);
+        }
     }
 
     private enum OfferFilter {
