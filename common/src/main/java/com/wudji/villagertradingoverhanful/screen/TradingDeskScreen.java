@@ -1,6 +1,7 @@
 package com.wudji.villagertradingoverhanful.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.wudji.villagertradingoverhanful.Constants;
 import com.wudji.villagertradingoverhanful.mixin.SlotPositionAccessor;
 import com.wudji.villagertradingoverhanful.platform.Services;
@@ -316,6 +317,9 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         int stockColor = offer.isOutOfStock() ? OUT_OF_STOCK_COLOR : ROW_MUTED_COLOR;
         graphics.drawString(font, font.plainSubstrByWidth(stock.getString(), Math.max(0, textWidth)), x + 86, y + 13, stockColor, false);
 
+        // 星形边缘是半透明像素；按钮贴图绘制完会把混合关掉，这里不自己开回来边缘会被画成实色
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
         blit(graphics, favorite ? FAVORITE_STAR : FAVORITE_STAR_EMPTY, x + width - 18, y + 4, 0, 0, 16, 16, 16, 16);
 
         if (hoveredStack != null) {
