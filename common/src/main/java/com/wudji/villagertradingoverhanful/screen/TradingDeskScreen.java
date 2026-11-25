@@ -382,11 +382,12 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     private static void drawListFrame(GuiGraphics graphics, int x, int y, int width, int height) {
         int textureWidth = 512;
         int textureHeight = 256;
-        blit(graphics, LIST_TEXTURE, x, y, 4, 17, width, 1, textureWidth, textureHeight);
-        blit(graphics, LIST_TEXTURE, x, y, 4, 17, 1, height, textureWidth, textureHeight);
-        blit(graphics, LIST_TEXTURE, x, y + height - 1, 5, 158, width, 1, textureWidth, textureHeight);
-        blit(graphics, LIST_TEXTURE, x + width - 1, y, 100, 20, 1, height, textureWidth, textureHeight);
-        blit(graphics, LIST_TEXTURE, x + 1, y + 1, 5, 18, width - 2, height - 2, textureWidth, textureHeight);
+        // 边框与内衬都只取 1 像素拉伸，复制整段会把纹理里的花色带进界面
+        blitStretched(graphics, LIST_TEXTURE, x, y, width, 1, 4, 17, 1, 1, textureWidth, textureHeight);
+        blitStretched(graphics, LIST_TEXTURE, x, y, 1, height, 4, 17, 1, 1, textureWidth, textureHeight);
+        blitStretched(graphics, LIST_TEXTURE, x, y + height - 1, width, 1, 5, 158, 1, 1, textureWidth, textureHeight);
+        blitStretched(graphics, LIST_TEXTURE, x + width - 1, y, 1, height, 100, 20, 1, 1, textureWidth, textureHeight);
+        blitStretched(graphics, LIST_TEXTURE, x + 1, y + 1, width - 2, height - 2, 5, 18, 1, 1, textureWidth, textureHeight);
     }
 
     private static void drawSlot(GuiGraphics graphics, int x, int y) {
