@@ -80,7 +80,10 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    implementation "maven.modrinth:9s6osm5g:${cloth_config_version}"
+    // 发布版 cloth 是 SRG 名，开发工作区是 official 名，原样挂上去会在点配置按钮时抛
+    // NoSuchMethodError: Component.literal，必须走 deobf；直接写坐标会去找仓库里不存在的
+    // *_mapped_official_* 变体，所以从本机缓存里取已下载的 jar 交给 fg.deobf
+    implementation fg.deobf(fileTree(dir: "${gradle.gradleUserHomeDir}/caches/modules-2/files-2.1/maven.modrinth/9s6osm5g/${cloth_config_version}", include: ['**/*.jar']))
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
