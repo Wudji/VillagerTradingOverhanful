@@ -20,3 +20,6 @@ hs_err_pid*
 # Common working directory
 run
 /AGENTS.md
+
+# local dev-only dependency copies
+libs/*.jar
