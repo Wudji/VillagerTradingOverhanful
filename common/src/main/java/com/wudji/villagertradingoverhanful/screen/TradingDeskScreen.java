@@ -347,7 +347,11 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         }
         graphics.renderItemDecorations(font, base, x, y, base.getCount() == 1 ? "1" : null);
         graphics.renderItemDecorations(font, cost, x + 14, y, cost.getCount() == 1 ? "1" : null);
+        // 划线与物品共用深度，原版把这一段提到 z+300 才不会被物品盖住
+        graphics.pose().pushPose();
+        graphics.pose().translate(0.0F, 0.0F, 300.0F);
         graphics.blit(DISCOUNT_STRIKETHROUGH_TEXTURE, x + 7, y + 12, 0.0F, 176.0F, 9, 2, 512, 256);
+        graphics.pose().popPose();
     }
 
     private void drawScrollbar(GuiGraphics graphics) {
@@ -390,11 +394,12 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     private static void drawListFrame(GuiGraphics graphics, int x, int y, int width, int height) {
         int textureWidth = 512;
         int textureHeight = 256;
-        blit(graphics, LIST_TEXTURE, x, y, 4, 17, width, 1, textureWidth, textureHeight);
-        blit(graphics, LIST_TEXTURE, x, y, 4, 17, 1, height, textureWidth, textureHeight);
-        blit(graphics, LIST_TEXTURE, x, y + height - 1, 5, 158, width, 1, textureWidth, textureHeight);
-        blit(graphics, LIST_TEXTURE, x + width - 1, y, 100, 20, 1, height, textureWidth, textureHeight);
-        blit(graphics, LIST_TEXTURE, x + 1, y + 1, 5, 18, width - 2, height - 2, textureWidth, textureHeight);
+        // 边框与内衬都只取 1 像素拉伸，复制整段会把纹理里的花色带进界面
+        blitStretched(graphics, LIST_TEXTURE, x, y, width, 1, 4, 17, 1, 1, textureWidth, textureHeight);
+        blitStretched(graphics, LIST_TEXTURE, x, y, 1, height, 4, 17, 1, 1, textureWidth, textureHeight);
+        blitStretched(graphics, LIST_TEXTURE, x, y + height - 1, width, 1, 5, 158, 1, 1, textureWidth, textureHeight);
+        blitStretched(graphics, LIST_TEXTURE, x + width - 1, y, 1, height, 100, 20, 1, 1, textureWidth, textureHeight);
+        blitStretched(graphics, LIST_TEXTURE, x + 1, y + 1, width - 2, height - 2, 5, 18, 1, 1, textureWidth, textureHeight);
     }
 
     private static void drawSlot(GuiGraphics graphics, int x, int y) {
