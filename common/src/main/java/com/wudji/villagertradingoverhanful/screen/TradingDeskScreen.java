@@ -59,6 +59,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     private static final int PANEL_BORDER = 4;
     private static final Identifier PANEL_TEXTURE = Identifier.withDefaultNamespace("textures/gui/container/generic_54.png");
     private static final Identifier LIST_TEXTURE = Identifier.withDefaultNamespace("textures/gui/container/villager.png");
+    private static final Identifier DISCOUNT_STRIKETHROUGH_SPRITE = Identifier.withDefaultNamespace("container/villager/discount_strikethrough");
     private static final Identifier SLOT_SPRITE = Identifier.withDefaultNamespace("container/slot");
     private static final Identifier FAVORITE_STAR = texture("favorite_star");
     private static final Identifier FAVORITE_STAR_EMPTY = texture("favorite_star_empty");
@@ -283,7 +284,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
         }
 
         ItemStack hoveredStack = null;
-        renderItem(graphics, offer.getCostA(), x + 5, itemY);
+        renderCost(graphics, offer.getCostA(), offer.getBaseCostA(), x + 5, itemY);
         if (isHoveringItem(mouseX, mouseY, x + 5, itemY)) {
             hoveredStack = offer.getCostA();
         }
@@ -338,6 +339,18 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     private void renderItem(GuiGraphicsExtractor graphics, ItemStack stack, int x, int y) {
         graphics.fakeItem(stack, x, y);
         graphics.itemDecorations(font, stack, x, y);
+    }
+
+    // 与原版一致：有折扣时画原价计数并划线，现价计数左移 14 像素并列显示
+    private void renderCost(GuiGraphicsExtractor graphics, ItemStack cost, ItemStack base, int x, int y) {
+        graphics.fakeItem(cost, x, y);
+        if (base.getCount() == cost.getCount()) {
+            graphics.itemDecorations(font, cost, x, y);
+            return;
+        }
+        graphics.itemDecorations(font, base, x, y, base.getCount() == 1 ? "1" : null);
+        graphics.itemDecorations(font, cost, x + 14, y, cost.getCount() == 1 ? "1" : null);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, DISCOUNT_STRIKETHROUGH_SPRITE, x + 7, y + 12, 9, 2);
     }
 
     private void drawScrollbar(GuiGraphicsExtractor graphics) {
