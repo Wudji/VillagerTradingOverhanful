@@ -75,6 +75,17 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
 sourceSets.main.resources.srcDir generateModMetadata
 neoForge.ideSyncTask generateModMetadata
 
+// FML 4 refuses a dev mod folder that has no META-INF, so the dev run gets one merged folder
+tasks.register('syncDevModFolder', Sync) {
+    from sourceSets.main.output
+    into layout.buildDirectory.dir('devmod/villagertradingoverhanful')
+}
+
+tasks.named('runClient') {
+    dependsOn 'syncDevModFolder'
+    environment 'MOD_CLASSES', 'villagertradingoverhanful%%' + layout.buildDirectory.dir('devmod/villagertradingoverhanful').get().asFile.absolutePath
+}
+
 publishing {
     publications {
         register('mavenJava', MavenPublication) {
