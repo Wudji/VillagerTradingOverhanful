@@ -54,6 +54,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     private static final int PANEL_BORDER = 4;
     private static final ResourceLocation PANEL_TEXTURE = texture("panel");
     private static final ResourceLocation LIST_TEXTURE = texture("trade_list");
+    private static final ResourceLocation DISCOUNT_STRIKETHROUGH_TEXTURE = new ResourceLocation("minecraft", "textures/gui/container/villager2.png");
     private static final ResourceLocation SLOT_TEXTURE = texture("slot");
     private static final ResourceLocation FAVORITE_STAR = texture("favorite_star");
     private static final ResourceLocation FAVORITE_STAR_EMPTY = texture("favorite_star_empty");
@@ -284,7 +285,7 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
             graphics.fill(x + width - 1, y, x + width, y + height, 0xFFFFFFFF);
         }
 
-        renderItem(graphics, offer.getCostA(), x + 5, itemY);
+        renderCost(graphics, offer.getCostA(), offer.getBaseCostA(), x + 5, itemY);
         if (isHoveringItem(mouseX, mouseY, x + 5, itemY)) {
             hoveredStack = offer.getCostA();
         }
@@ -335,6 +336,18 @@ public class TradingDeskScreen extends AbstractContainerScreen<MerchantMenu> {
     private void renderItem(GuiGraphics graphics, ItemStack stack, int x, int y) {
         graphics.renderItem(stack, x, y);
         graphics.renderItemDecorations(font, stack, x, y);
+    }
+
+    // 与原版一致：有折扣时画原价计数并划线，现价计数左移 14 像素并列显示
+    private void renderCost(GuiGraphics graphics, ItemStack cost, ItemStack base, int x, int y) {
+        graphics.renderItem(cost, x, y);
+        if (base.getCount() == cost.getCount()) {
+            graphics.renderItemDecorations(font, cost, x, y);
+            return;
+        }
+        graphics.renderItemDecorations(font, base, x, y, base.getCount() == 1 ? "1" : null);
+        graphics.renderItemDecorations(font, cost, x + 14, y, cost.getCount() == 1 ? "1" : null);
+        graphics.blit(DISCOUNT_STRIKETHROUGH_TEXTURE, x + 7, y + 12, 0.0F, 176.0F, 9, 2, 512, 256);
     }
 
     private void drawScrollbar(GuiGraphics graphics) {
